@@ -1,0 +1,10 @@
+<template>
+  <div>
+    <video
+      src="/base/org/1/file?file=1/gate/jc.mp4_1592577403149"
+      controls="controls"
+      width="100%"
+      height="500"
+    ></video>
+  </div>
+</template>
