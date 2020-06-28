@@ -42,6 +42,7 @@ export const filterAsyncRouter = routers => {
 
 export const loadView = view => {
   // 路由懒加载
-  return () => import(`@/views/${view}`);
+  // return () => import(`@/views/${view}`);
+  return () => Promise.resolve(require(`@/views/${view}`).default);
 };
 export default permission;
