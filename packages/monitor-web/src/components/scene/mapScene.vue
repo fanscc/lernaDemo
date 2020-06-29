@@ -44,7 +44,10 @@
               </p>
             </div>
             <div class="sensor-info">
-              <span class="val">{{ sensor.value1 || "暂无数据" }}</span>
+              <span class="val">{{
+                sensor.value1 + "" + sensorType(sensor.sensor).unit ||
+                  "暂无数据"
+              }}</span>
             </div>
           </li>
         </ul>

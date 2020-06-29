@@ -1,7 +1,21 @@
 <template>
   <div class="node-map-wrap">
     <div class="node-map-wrap_nav">
-      <selfCascader :path="PATH" @gateSwitch="gateSwitch" />
+      <!-- <selfCascader :path="PATH" @gateSwitch="gateSwitch" /> -->
+      <el-select
+        v-model="selectGate"
+        filterable
+        placeholder="请选择"
+        @change="gatewaySwicth"
+      >
+        <el-option
+          v-for="item in gatewayArr"
+          :key="item.gateId"
+          :label="item.gateAlias"
+          :value="item.gateId"
+        >
+        </el-option>
+      </el-select>
       <p class="dashboard-container_nav_title">
         <font style="color: #42b983;margin-right:4px">{{ gateName }}</font
         >网关下标注了坐标的所有节点的信息
@@ -44,7 +58,10 @@
               </p>
             </div>
             <div class="sensor-info">
-              <span class="val">{{ sensor.value1 || "暂无数据" }}</span>
+              <span class="val">{{
+                sensor.value1 + "" + sensorType(sensor.sensor).unit ||
+                  "暂无数据"
+              }}</span>
             </div>
           </li>
         </ul>
@@ -83,7 +100,6 @@ import mapScene from "@/components/scene/mapScene";
 import dialogTime from "@/components/historyValshow/index";
 import airconditdialog from "@/components/historyValshow/airconditdialog";
 import switchdialog from "@/components/historyValshow/switch";
-import selfCascader from "@/components/Cascader/index";
 import routeMap from "@/components/historyValshow/routeMap";
 const uid = JSON.parse(localStorage.getItem("userId"));
 const PATH = [
@@ -100,8 +116,7 @@ export default {
     dialogTime,
     airconditdialog,
     switchdialog,
-    routeMap,
-    selfCascader
+    routeMap
   },
   data() {
     return {
@@ -112,7 +127,9 @@ export default {
       mapImg: "", // 网关背景图片
       isGps: 0, // 判断是室内还是室外1室内2室外
       mapPotionInfo: [], // 地图的标注点
-      timers: null
+      timers: null,
+      gatewayArr: [], // 网关列表
+      selectGate: "" // 选中的网关
     };
   },
   mounted() {
@@ -130,6 +147,7 @@ export default {
       const arrVals = (await this.getGaet()) || "";
       console.log(arrVals);
       if (arrVals && arrVals[1].name) {
+        this.selectGate = arrVals[1].gateId;
         this.gateSwitch(arrVals);
       }
     },
@@ -137,6 +155,7 @@ export default {
       return new Promise((resolve, reject) => {
         getGate()
           .then(res => {
+            this.gatewayArr = res.result;
             const arrVals = [
               {},
               {
@@ -152,6 +171,20 @@ export default {
             reject("");
           });
       });
+    },
+    gatewaySwicth(val) {
+      let items = {};
+      for (let i = 0; i < this.gatewayArr.length; i++) {
+        let item = this.gatewayArr[i];
+        if (item.gateId === val) {
+          items.name = item.gateAlias || "";
+          items.gateId = item.gateId || "";
+          items.map = item.map || "";
+          items.isGps = item.isGps || 2;
+          break;
+        }
+      }
+      this.gateSwitch([{}, items]);
     },
     sensorType(type) {
       return this.$utils.fliterSensorName(type, true);

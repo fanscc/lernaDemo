@@ -88,6 +88,11 @@ export default {
     ];
     this.extend = {
       "xAxis.0.axisLabel.rotate": 45,
+      toolbox: {
+        feature: {
+          saveAsImage: {}
+        }
+      },
       tooltip: {
         triggerOn: "mousemove"
       }
@@ -145,7 +150,7 @@ export default {
       const arr = [];
       val.map(o => {
         const obj = {
-          日期: this.$utils.formatDate(o.sTime, "dd-hh:mm")
+          日期: this.$utils.formatDate(o.sTime, "MM-dd-hh:mm")
         };
         obj[this.activeSensorChrild] = o.value1;
         arr.push(obj);
