@@ -70,7 +70,11 @@
         height="100%"
       >
         <el-table-column type="index" width="50" />
-        <el-table-column prop="gateId" label="所属网关" />
+        <el-table-column prop="gateId" label="所属网关">
+          <template slot-scope="scope">
+            {{ gateWaySwitchName(scope.row.gateId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="address" label="地址" />
         <el-table-column prop="nodeName" label="节点别名" />
         <el-table-column prop="channel" label="节点通道" />
@@ -608,6 +612,15 @@ export default {
         });
         this.gateing = res.result;
       });
+    },
+    //吧网关转换成名字
+    gateWaySwitchName(id) {
+      for (var i = 0; i < this.gateing.length; i++) {
+        let item = this.gateing[i];
+        if (item.gateId === id) {
+          return item.gateAlias;
+        }
+      }
     },
     search() {
       if (!this.gatewayValue) {
