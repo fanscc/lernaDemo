@@ -268,14 +268,18 @@ export default {
         this.$nextTick(() => {
           this.isGps = val[1].isGps;
           this.$nextTick(() => {
-            this.$refs.imgContenDom.onload = () => {
-              imgContenW = this.$refs.imgContenDom.clientWidth;
-              imgContenH = this.$refs.imgContenDom.clientHeight;
-              this.initializationData(true);
-              this.timers = setInterval(() => {
-                this.initializationData();
-              }, 10000);
-            };
+            try {
+              this.$refs.imgContenDom.onload = () => {
+                imgContenW = this.$refs.imgContenDom.clientWidth;
+                imgContenH = this.$refs.imgContenDom.clientHeight;
+                this.initializationData(true);
+                this.timers = setInterval(() => {
+                  this.initializationData();
+                }, 10000);
+              };
+            } catch (error) {
+              console.log("加载图片异常");
+            }
           });
         });
       } else {
