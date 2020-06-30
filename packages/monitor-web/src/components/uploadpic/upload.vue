@@ -72,6 +72,7 @@ export default {
     },
     success_method() {
       const picName = `${this.formData.key}`;
+      console.log(1, picName);
       this.$emit("input", picName);
     },
     handlePictureCardPreview(file) {
