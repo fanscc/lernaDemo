@@ -46,7 +46,11 @@
         height="100%"
       >
         <el-table-column type="index" width="50" />
-        <el-table-column prop="groupId" label="所属分组" />
+        <el-table-column prop="groupId" label="所属分组">
+          <template slot-scope="scope">
+            {{ groupIdSwicthName(scope.row.groupId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="gateAlias" label="网关别名" />
         <el-table-column prop="macId" label="网关mac地址" />
         <el-table-column prop="lat" label="纬度" />
@@ -387,6 +391,15 @@ export default {
           });
       } else {
         this.init();
+      }
+    },
+    //吧分组的id转换成别名显示
+    groupIdSwicthName(id) {
+      for (var i = 0; i < this.grouping.length; i++) {
+        let item = this.grouping[i];
+        if (item.groupId === id) {
+          return item.groupName;
+        }
       }
     },
     handleClick(row) {
