@@ -6,11 +6,11 @@ import { getToken } from "@/utils/auth";
 import Config from "@/config";
 
 // 创建axios实例
-let baseUrl = process.env.ONLINE
-  ? "https://www.nongruiyun.com"
-  : "https://test.nongruiyun.com";
+// let baseUrl = process.env.ONLINE
+//   ? "https://www.nongruiyun.com"
+//   : "https://test.nongruiyun.com";
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === "production" ? baseUrl : "/", // api 的 base_url
+  // baseURL: process.env.NODE_ENV === "production" ? baseUrl : "/", // api 的 base_url
   timeout: Config.timeout, // 请求超时时间
   headers: {
     "Content-Type": "application/json"

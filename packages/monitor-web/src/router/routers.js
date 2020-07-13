@@ -34,7 +34,7 @@ export const constantRouterMap = [
   },
   {
     path: "/",
-    redirect: "/socialWork",
+    redirect: "/dashboard",
     hidden: true
   },
   // 社会服务经典问题
