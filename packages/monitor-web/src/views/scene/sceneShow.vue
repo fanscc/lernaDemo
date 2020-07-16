@@ -103,7 +103,7 @@ import switchdialog from "@/components/historyValshow/switch";
 import routeMap from "@/components/historyValshow/routeMap";
 const uid = JSON.parse(localStorage.getItem("userId"));
 const PATH = [
-  `/newman/user/${uid}/group`,
+  `/newman/group`,
   `/newman/user/${uid}/gate?groupId`,
   `/newman/gate`
 ];

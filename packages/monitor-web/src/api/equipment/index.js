@@ -3,7 +3,7 @@ import request from "@/utils/request";
 const uid = JSON.parse(localStorage.getItem("userId"));
 export function getGroup() {
   return request({
-    url: `/newman/user/${uid}/group`,
+    url: `/newman/group`,
     method: "get"
   });
 }
