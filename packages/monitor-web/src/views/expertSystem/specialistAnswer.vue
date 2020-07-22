@@ -102,7 +102,7 @@
           <div class="questions_intro">群简介: {{ titleObj.brief }}</div>
           <div class="questions_user" v-if="intentionExpert.length > 0">
             <p
-              @click="personalDetail(ite.uid)"
+              @click="personalDetail(ite.creator)"
               v-for="(ite, ind) in intentionExpert"
               :key="ind"
             >
