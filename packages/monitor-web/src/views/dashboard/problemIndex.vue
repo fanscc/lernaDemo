@@ -158,7 +158,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 .chart_conten_solve_build_problem {
   height: 100%;
   padding: 50px 20px 0 20px;
