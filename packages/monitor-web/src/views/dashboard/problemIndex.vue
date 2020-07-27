@@ -1,5 +1,5 @@
 <template>
-  <div class="chart_conten">
+  <div class="chart_conten_solve_build_problem">
     <div class="chart_conten_nav">
       <div>
         华山众创
@@ -10,13 +10,15 @@
       </div>
     </div>
     <div class="chart_conten_table" v-loading="loading">
-      <template v-for="(table,index) in tables" >
+      <template v-for="(table, index) in tables">
         <div class="item-header" :key="index">
           <div class="item-title">
             <svg-icon :icon-class="table.icon"></svg-icon>
-            <span>{{table.title}}</span>
+            <span>{{ table.title }}</span>
           </div>
-          <div class="item-more" @click="$router.push(table.link)">查看更多</div>
+          <div class="item-more" @click="$router.push(table.link)">
+            查看更多
+          </div>
         </div>
 
         <div
@@ -54,210 +56,220 @@
           </div>
         </div>
       </template>
-
     </div>
   </div>
 </template>
 
 <script>
-  import {articleSelectAbstract} from "../../api/articleManagement";
-  import {initData} from "../../api/data";
-  export default {
-    name: "classicQ",
-    data() {
-      return {
-        loading: true,
-        searchFrom: {
-          title: ""
+import { articleSelectAbstract } from "../../api/articleManagement";
+import { initData } from "../../api/data";
+export default {
+  name: "classicQ",
+  data() {
+    return {
+      loading: true,
+      searchFrom: {
+        title: ""
+      },
+      tables: [
+        {
+          icon: "team",
+          title: "特色团队",
+          link: "/login",
+          data: []
         },
-        tables: [
-          {
-            icon: "team",
-            title: "特色团队",
-            link: "/login",
-            data: [],
-          },
-          {
-            icon: "plan",
-            title: "解决方案",
-            link: "/login",
-            data: [],
-          },
-          {
-            icon: "info",
-            title: "科普信息",
-            category: 9,
-            link: "/login",
-            data: [],
-          },
-        ],
-        categorys: [],
-      };
-    },
-    mounted() {
-
-      initData("/cms/category").then(res => {
+        {
+          icon: "plan",
+          title: "解决方案",
+          link: "/login",
+          data: []
+        },
+        {
+          icon: "info",
+          title: "科普信息",
+          category: 9,
+          link: "/login",
+          data: []
+        }
+      ],
+      categorys: []
+    };
+  },
+  mounted() {
+    initData("/cms/category")
+      .then(res => {
         this.categorys = [...res.result];
-        console.log(this.categorys)
-        this.tables.forEach((item)=>{
-          for(let i=0;i<this.categorys.length;i++){
-            if (item.title === this.categorys[i].name){
+        console.log(this.categorys);
+        this.tables.forEach(item => {
+          for (let i = 0; i < this.categorys.length; i++) {
+            if (item.title === this.categorys[i].name) {
               item["category"] = this.categorys[i].id;
             }
           }
         });
         this.init();
+      })
+      .catch(() => {
+        this.loading = false;
       });
-    },
-    methods: {
-      init() {
-        let promises = [];
-        this.tables.forEach((item,index)=>{
-          promises[index] = new Promise(resolve => {
-            articleSelectAbstract({category:item.category,offset:0,limit:3}).then(res => {
-              item.data = [...res.result];
-              resolve();
-            });
+  },
+  methods: {
+    init() {
+      let promises = [];
+      this.tables.forEach((item, index) => {
+        promises[index] = new Promise(resolve => {
+          articleSelectAbstract({
+            category: item.category,
+            offset: 0,
+            limit: 3
+          }).then(res => {
+            item.data = [...res.result];
+            resolve();
           });
         });
-        Promise.all(promises).then(()=>{
-          this.loading = false;
-        });
-      },
-      goArtic(id) {
-        let routeUrl = this.$router.resolve({
-          path: "/articleDetai"
-        });
-        window.open(`${routeUrl.href}?id=${id}`, "_blank");
-      },
-      goAnswer(id) {
-        this.$router.push({
-          path: "/socialWorkDetail",
-          query: { id: id }
-        });
-      },
-      goLogin() {
-        this.$router.push({
-          path: "/login"
-        });
-      },
-      register() {
-        this.$router.push({
-          path: "/register"
-        });
-      }
+      });
+      Promise.all(promises).finally(() => {
+        this.loading = false;
+      });
+    },
+    goArtic(id) {
+      let routeUrl = this.$router.resolve({
+        path: "/articleDetai"
+      });
+      window.open(`${routeUrl.href}?id=${id}`, "_blank");
+    },
+    goAnswer(id) {
+      this.$router.push({
+        path: "/socialWorkDetail",
+        query: { id: id }
+      });
+    },
+    goLogin() {
+      this.$router.push({
+        path: "/login"
+      });
+    },
+    register() {
+      this.$router.push({
+        path: "/register"
+      });
     }
-  };
+  }
+};
 </script>
 
-<style lang="scss" scope>
-  .chart_conten {
-    height: 100%;
-    padding: 50px 20px 0 20px;
-    overflow-x: hidden;
-    position: relative;
-    .chart_conten_search {
-      padding: 20px 0;
-    }
-    .ml_20 {
-      margin-left: 20px;
-    }
-    .chart_conten_table {
-      height: calc(100vh - 80px);
-      border: 1px solid #ebeef5;
-      overflow: auto;
-      .item-header{
-        padding: 10px 20px;
-        border-bottom: 1px solid #ebeef5;
-        .item-title{
-          display: inline-block;
-          span{
-            margin-left: 7px;
-          }
-        }
-        .item-more{
-          float: right;
-          cursor: pointer;
-          color: #36a3f7;
-          line-height: 16px;
-          font-size: 12px;
-        }
-      }
-    }
-    .quertion_item {
-      position: relative;
-      height: 60px;
-      line-height: 60px;
-      div,
-      p {
-        margin: 0;
-        padding: 0;
-        line-height: 30px;
-      }
-      p {
-        font-size: 12px;
-        color: #666;
-      }
-      .artic_img {
-        margin: 0 10px 0 30px;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        .el-image__inner{
-          margin-top: 5px;
-          width: 50px;
-          height: 50px;
-          object-fit: cover;
-        }
-      }
-      display: flex;
-      cursor: pointer;
+<style lang="scss">
+.chart_conten_solve_build_problem {
+  height: 100%;
+  padding: 50px 20px 0 20px;
+  overflow-x: hidden;
+  position: relative;
+  .chart_conten_search {
+    padding: 20px 0;
+  }
+  .ml_20 {
+    margin-left: 20px;
+  }
+  .chart_conten_table {
+    height: calc(100vh - 80px);
+    border: 1px solid #ebeef5;
+    overflow: auto;
+    .item-header {
+      padding: 10px 20px;
       border-bottom: 1px solid #ebeef5;
-    }
-    .flex_conten {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px !important;
-      .pub_btn {
-        transform: translateY(-10px);
-      }
-    }
-    .chart_conten_nav {
-      position: fixed;
-      height: 50px;
-      top: 0;
-      left: 0;
-      right: 0;
-      overflow: hidden;
-      background-color: #fff;
-      -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-      div:nth-of-type(1) {
-        font-size: 18px;
-        font-weight: bold;
-      }
-      div:nth-of-type(2) {
+      .item-title {
+        display: inline-block;
         span {
-          cursor: pointer;
+          margin-left: 7px;
         }
-        span:nth-of-type(1) {
-          font-size: 14px;
-          color: #0681d0;
-          margin-right: 20px;
-        }
-        span:nth-of-type(2) {
-          font-size: 14px;
-          color: #0681d0;
-          border-radius: 30%;
-          padding: 5px;
-          border: 1px solid #0681d0;
-        }
+      }
+      .item-more {
+        float: right;
+        cursor: pointer;
+        color: #36a3f7;
+        line-height: 16px;
+        font-size: 12px;
       }
     }
   }
+  .quertion_item {
+    position: relative;
+    height: 60px;
+    line-height: 60px;
+    div,
+    p {
+      margin: 0;
+      padding: 0;
+      line-height: 30px;
+    }
+    p {
+      font-size: 12px;
+      color: #666;
+    }
+    .artic_img {
+      margin: 0 10px 0 30px;
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      .el-image__inner {
+        margin-top: 5px;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+      }
+      .artic_img_loading{
+        width: 50px;
+
+      }
+    }
+    display: flex;
+    cursor: pointer;
+    border-bottom: 1px solid #ebeef5;
+  }
+  .flex_conten {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px !important;
+    .pub_btn {
+      transform: translateY(-10px);
+    }
+  }
+  .chart_conten_nav {
+    position: fixed;
+    height: 50px;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    background-color: #fff;
+    -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    div:nth-of-type(1) {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    div:nth-of-type(2) {
+      span {
+        cursor: pointer;
+      }
+      span:nth-of-type(1) {
+        font-size: 14px;
+        color: #0681d0;
+        margin-right: 20px;
+      }
+      span:nth-of-type(2) {
+        font-size: 14px;
+        color: #0681d0;
+        border-radius: 30%;
+        padding: 5px;
+        border: 1px solid #0681d0;
+      }
+    }
+  }
+}
 </style>
