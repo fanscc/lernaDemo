@@ -80,11 +80,21 @@ export function getTopic(id) {
 /// 回复问题的信息接口
 export function getReply(id) {
   return request({
-    url: `/expert/reply/topicId/${id}`,
+    url: `/expert/reply?topicId=${id}`,
     method: "get",
     noloding: true
   });
 }
+
+/// 回复问题的信息接口
+export function getReplyMore(id,maxId) {
+  return request({
+    url: `/expert/reply?topicId=${id}&maxId=${maxId}`,
+    method: "get",
+    noloding: true
+  });
+}
+
 /// 获取当前任务的关联任务,包括用户,专家
 export function getAtExpert(id) {
   return request({

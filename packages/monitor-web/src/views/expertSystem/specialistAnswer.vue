@@ -20,6 +20,7 @@
             ref="scrollDom"
             class="questions_conten_details_left_scroll"
           >
+            <el-button v-if="oldLen>=30" type="primary" size="mini" @click="more" :loading="moreLoading" style="margin: 0 auto;display: block;">查看更多</el-button>
             <div
               v-for="(item, index) in messageArray"
               :key="index"
@@ -144,6 +145,7 @@ import chooseExpert from "./common/chooseExpert.vue";
 import Viewer from "v-viewer";
 import Vue from "vue";
 import "viewerjs/dist/viewer.css";
+import {getReplyMore} from "../../api/expertSystem";
 Vue.use(Viewer, {
   defaultOptions: {
     zIndex: 100000
@@ -167,7 +169,9 @@ export default {
       messageArray: [],
       intentionExpert: [],
       percentage: 1, // 上传图片的进度条
-      loading: false // 代表图片上传的时候的进度和发送信息的进度
+      loading: false, // 代表图片上传的时候的进度和发送信息的进度
+      oldLen: undefined,
+      moreLoading: false,
     };
   },
   created() {
@@ -185,6 +189,15 @@ export default {
     this.destroyed();
   },
   methods: {
+    more(){
+      this.moreLoading = true;
+      getReplyMore(this.topicId,this.messageArray[0].id).then(res => {
+        this.oldLen = res.result.length;
+        this.messageArray.unshift(...res.result.reverse());
+      }).finally(()=>{
+        this.moreLoading = false;
+      });
+    },
     destroyed() {
       clearInterval(this.times);
       this.times = null;
@@ -202,19 +215,33 @@ export default {
         this.circulation();
       }
     },
-    getReply() {
+    getReply: function () {
       getReply(this.topicId).then(res => {
-        let oldLen = this.messageArray.length;
-        this.messageArray = res.result;
-        this.$nextTick(() => {
-          try {
-            if (this.messageArray.length !== oldLen) {
-              this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+
+        if (this.messageArray.length === 0) {
+          this.messageArray.push(...res.result.reverse());
+        }
+        else if (this.messageArray[this.messageArray.length - 1].id !== res.result[0].id) {
+          for (let [key,value] of res.result.entries()) {
+            if(this.messageArray[this.messageArray.length - 1].id === value.id){
+              this.messageArray.push(...res.result.splice(0,key));
+              setTimeout(()=>{this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+              },0);
+              break;
             }
-          } catch (_) {
-            console.log(_);
           }
-        });
+        }
+        if (this.oldLen === undefined) {
+          this.oldLen = this.messageArray.length;
+          this.$nextTick(() => {
+            try {
+              this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+            } catch (_) {
+              console.log(_);
+            }
+          });
+        }
+
       });
     },
     personalDetail(id) {
