@@ -215,7 +215,7 @@ export default {
       this.times = null;
     },
     circulation() {
-      if (this.times === null && this.statu === "1") {
+      if (this.times === null && parseInt(this.statu) !== 100) {
         this.times = setInterval(this.getReply, 1000);
       }
     },
@@ -237,8 +237,7 @@ export default {
             if(this.messageArray[this.messageArray.length - 1].id === value.id){
               this.messageArray.push(...res.result.splice(0,key));
               this.$nextTick(() => {
-                if(this.messageArray[this.messageArray.length - 1].content.indexOf("/base/org/")<0)
-                  this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+                this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
               });
               break;
             }
