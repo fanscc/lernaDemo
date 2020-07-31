@@ -301,7 +301,7 @@ export default {
           this.loading = false;
         });
     },
-    change(file, imgItem) {
+    change() {
       // this.messageArray.push(imgItem);
       this.loading = true;
       // 让滚动条滚动到最下面
