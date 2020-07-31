@@ -41,6 +41,7 @@
                   />
                   <img
                     :src="item.content"
+                    @load="loaded"
                     :style="{ opacity: item.status === 1 ? 0.5 : 1 }"
                     alt=" "
                   />
@@ -61,6 +62,7 @@
                   />
                   <img
                     :src="item.content"
+                    @load="loaded"
                     :style="{ opacity: item.status === 1 ? 0.5 : 1 }"
                     alt=" "
                   />
@@ -189,6 +191,9 @@ export default {
     this.destroyed();
   },
   methods: {
+    loaded(){
+      this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+    },
     more(){
       this.moreLoading = true;
       getReplyMore(this.topicId,this.messageArray[0].id).then(res => {
@@ -203,7 +208,7 @@ export default {
       this.times = null;
     },
     circulation() {
-      if (this.times === null) {
+      if (this.times === null && this.statu === 1) {
         this.times = setInterval(this.getReply, 1000);
       }
     },
@@ -217,7 +222,6 @@ export default {
     },
     getReply: function () {
       getReply(this.topicId).then(res => {
-
         if (this.messageArray.length === 0) {
           this.messageArray.push(...res.result.reverse());
         }
@@ -225,8 +229,10 @@ export default {
           for (let [key,value] of res.result.entries()) {
             if(this.messageArray[this.messageArray.length - 1].id === value.id){
               this.messageArray.push(...res.result.splice(0,key));
-              setTimeout(()=>{this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
-              },0);
+              this.$nextTick(() => {
+                if(this.messageArray[this.messageArray.length - 1].content.indexOf("/base/org/")<0)
+                  this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+              });
               break;
             }
           }
@@ -243,7 +249,8 @@ export default {
         }
 
       });
-    },
+      console.log(this.messageArray);
+      },
     personalDetail(id) {
       // 需要传过去id，跟当前角色
       this.destroyed();
@@ -289,7 +296,7 @@ export default {
         });
     },
     change(file, imgItem) {
-      this.messageArray.push(imgItem);
+      // this.messageArray.push(imgItem);
       this.loading = true;
       // 让滚动条滚动到最下面
       this.$nextTick(() => {
@@ -328,7 +335,7 @@ export default {
           this.loading = false;
           imgItem.status = 0;
           this.percentage = 1;
-          this.messageArray.pop();
+          // this.messageArray.pop();
         });
     },
     error(imgItem) {
