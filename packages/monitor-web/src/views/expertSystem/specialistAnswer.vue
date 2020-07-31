@@ -43,7 +43,7 @@
                     :src="item.content"
                     @load="loaded"
                     :style="{ opacity: item.status === 1 ? 0.5 : 1 }"
-                    alt=" "
+                    alt="图片加载失败"
                   />
                 </p>
               </div>
@@ -64,7 +64,7 @@
                     :src="item.content"
                     @load="loaded"
                     :style="{ opacity: item.status === 1 ? 0.5 : 1 }"
-                    alt=" "
+                    alt="图片加载失败"
                   />
                 </p>
               </div>
@@ -174,6 +174,7 @@ export default {
       loading: false, // 代表图片上传的时候的进度和发送信息的进度
       oldLen: undefined,
       moreLoading: false,
+      isMore: false
     };
   },
   created() {
@@ -192,13 +193,19 @@ export default {
   },
   methods: {
     loaded(){
-      this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+      if(!this.isMore)
+        this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
     },
     more(){
+      this.isMore = true;
       this.moreLoading = true;
       getReplyMore(this.topicId,this.messageArray[0].id).then(res => {
         this.oldLen = res.result.length;
         this.messageArray.unshift(...res.result.reverse());
+        let oldHight = this.$refs.scrollDom.scrollHeight;
+        this.$nextTick(() => {
+          this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight - oldHight;
+        })
       }).finally(()=>{
         this.moreLoading = false;
       });
@@ -208,7 +215,7 @@ export default {
       this.times = null;
     },
     circulation() {
-      if (this.times === null && this.statu === 1) {
+      if (this.times === null && this.statu === "1") {
         this.times = setInterval(this.getReply, 1000);
       }
     },
@@ -247,10 +254,9 @@ export default {
             }
           });
         }
-
+        console.log(this.messageArray)
       });
-      console.log(this.messageArray);
-      },
+    },
     personalDetail(id) {
       // 需要传过去id，跟当前角色
       this.destroyed();
@@ -289,6 +295,7 @@ export default {
           //   this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
           // });
           this.loading = false;
+          this.isMore = false;
         })
         .catch(() => {
           this.$message.error("回复失败");
@@ -299,9 +306,9 @@ export default {
       // this.messageArray.push(imgItem);
       this.loading = true;
       // 让滚动条滚动到最下面
-      this.$nextTick(() => {
-        this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
-      });
+      // this.$nextTick(() => {
+      //   this.$refs.scrollDom.scrollTop = this.$refs.scrollDom.scrollHeight;
+      // });
     },
     success(picUrl, imgItem) {
       // 调本地接口存路径
@@ -324,6 +331,7 @@ export default {
           //   contentType: 2
           // });
           this.loading = false;
+          this.isMore = false;
           imgItem.status = 0;
           this.percentage = 1;
           // this.$nextTick(() => {
