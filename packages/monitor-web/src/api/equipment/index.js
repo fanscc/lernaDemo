@@ -34,6 +34,14 @@ export function deleteGroup(groupId) {
   });
 }
 
+// 根据个人获取分组
+export function getGroupByUid(uid) {
+  return request({
+    url: `/newman/user/${uid}/group`,
+    method: "get"
+  });
+}
+
 // 获取所有网关列表
 export function getGate(id) {
   const userId = id || uid;
