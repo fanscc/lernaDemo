@@ -57,6 +57,11 @@
         </div>
       </template>
     </div>
+    <div class="footer">
+      <font>ICP备案主体信息备案/许可证号：粤ICP备19091043号</font>
+      <font>审核通过时间：2020-08-11 09:53:28</font>
+      <font>主办单位名称：广东省农业科学院茶叶研究所</font>
+    </div>
   </div>
 </template>
 
@@ -160,8 +165,8 @@ export default {
 
 <style lang="scss" >
 .chart_conten_solve_build_problem {
-  height: 100%;
-  padding: 50px 20px 0 20px;
+  height: calc(100% - 72px);
+  padding: 50px 0 0 0;
   overflow-x: hidden;
   position: relative;
   .chart_conten_search {
@@ -171,7 +176,7 @@ export default {
     margin-left: 20px;
   }
   .chart_conten_table {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 130px);
     border: 1px solid #ebeef5;
     overflow: auto;
     .item-header {
@@ -270,6 +275,19 @@ export default {
         border: 1px solid #0681d0;
       }
     }
+  }
+  .footer {
+    height: 70px;
+    background: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 12px;
   }
 }
 </style>

@@ -82,6 +82,11 @@
         </div>
       </div>
     </div>
+    <div class="footer">
+      <font>ICP备案主体信息备案/许可证号：粤ICP备19091043号</font>
+      <font>审核通过时间：2020-08-11 09:53:28</font>
+      <font>主办单位名称：广东省农业科学院茶叶研究所</font>
+    </div>
   </div>
 </template>
 
@@ -233,5 +238,18 @@ export default {
   color: blue;
   margin-left: 130px;
   cursor: pointer;
+}
+.footer {
+  height: 70px;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 12px;
 }
 </style>
