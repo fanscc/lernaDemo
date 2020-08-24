@@ -2,7 +2,7 @@
   <div class="chart_conten_solve_build_problem">
     <div class="chart_conten_nav">
       <div>
-        华山众创
+        智慧茶园
       </div>
       <div>
         <span @click="goLogin">登录</span>
