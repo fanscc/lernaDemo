@@ -148,12 +148,16 @@ export default {
       this.chartData.columns[1] = this.activeSensorChrild;
       this.chartData.rows = [];
       const arr = [];
+      let oldTime = 0
       val.map(o => {
-        const obj = {
-          日期: this.$utils.formatDate(o.sTime, "MM-dd-hh:mm")
-        };
-        obj[this.activeSensorChrild] = o.value1;
-        arr.push(obj);
+        if (o.sTime - oldTime > 1000) {
+          oldTime = o.sTime
+          const obj = {
+            日期: this.$utils.formatDate(o.sTime, "MM-dd-hh:mm:ss")
+          };
+          obj[this.activeSensorChrild] = o.value1;
+          arr.push(obj);
+        }
       });
       this.chartData.rows = arr.slice();
     }
