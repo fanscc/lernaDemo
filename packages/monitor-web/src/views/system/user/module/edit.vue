@@ -36,6 +36,7 @@ export default {
   methods: {
     to() {
       const _this = this.$refs.form;
+      debugger;
       _this.getRoles();
       _this.getDepts();
       _this.getRoleLevel();
@@ -47,18 +48,18 @@ export default {
         email: this.data.email,
         enabled: this.data.enabled.toString(),
         roles: [],
-        dept: { id: this.data.dept.id },
-        job: { id: this.data.job.id },
+        dept: { id: this.data.dept ? this.data.dept.id : "" },
+        job: { id: this.data.job ? this.data.job.id : "" },
         majorId: this.data.majorId,
         expertIntroduction: this.data.expertIntroduction
       };
       this.data.roles.forEach(function(data) {
         _this.roleIds.push(data.id);
       });
-      _this.deptId = this.data.dept.id;
-      _this.jobId = this.data.job.id;
-      _this.getJobs(_this.deptId);
       _this.dialog = true;
+      _this.deptId = this.data.dept ? this.data.dept.id : null;
+      _this.jobId = this.data.job ? this.data.job.id : null;
+      _this.getJobs(_this.deptId);
     }
   }
 };
