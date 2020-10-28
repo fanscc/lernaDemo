@@ -7,12 +7,12 @@ import store from "../store";
 let loadinginstance = null;
 
 // 创建axios实例
-let baseUrl = process.env.ONLINE
-  ? "https://www.nongruiyun.com"
-  : "https://test.nongruiyun.com";
+// let baseUrl = process.env.ONLINE
+//   ? "https://www.nongruiyun.com"
+//   : "https://test.nongruiyun.com";
 
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === "production" ? baseUrl : "/", // api 的 base_url
+  // baseURL: "/", // api 的 base_url
   timeout: 6000, // 请求超时时间
   headers: {
     "Content-Type": "application/json"

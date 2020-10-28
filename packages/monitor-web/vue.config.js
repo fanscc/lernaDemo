@@ -10,7 +10,7 @@ function resolve(dir) {
 // eslint-disable-next-line no-unused-vars
 let proxyTable = {
   "/": {
-    target: "https://test.nongruiyun.com",
+    target: "https://zckj.gudonger.com",
     changeOrigin: true
   }
 };
