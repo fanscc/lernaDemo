@@ -51,6 +51,9 @@
           <el-form-item label="别名" prop="addOtherName">
             <el-input v-model="addruleForm.addOtherName" />
           </el-form-item>
+          <el-form-item label="上传分组图片">
+            <uploadPic v-if="centerDialogVisible" v-model="picName"
+          /></el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
@@ -72,6 +75,9 @@
           <el-form-item label="别名" prop="editOtherName">
             <el-input v-model="editruleForm.editOtherName" />
           </el-form-item>
+          <el-form-item label="上传分组图片">
+            <uploadPic v-if="centerDialogVisible" v-model="picName"
+          /></el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
@@ -91,6 +97,7 @@ import {
   getsearchGroup
 } from "@/api/equipment";
 import { Loading } from "element-ui";
+import uploadPic from "@/components/uploadpic/upload";
 export default {
   name: "Gateway",
   data: function() {
@@ -115,6 +122,7 @@ export default {
         padding: "0",
         height: "40px"
       },
+      picName: "",
       addruleForm: {
         addOtherName: "" // 别名
       },
@@ -130,6 +138,9 @@ export default {
         ]
       }
     };
+  },
+  components: {
+    uploadPic
   },
   created() {
     this.init();
@@ -158,8 +169,10 @@ export default {
       this.$refs["addruleForm"].validate(valid => {
         if (valid) {
           const params = {
-            groupName: this.addruleForm.addOtherName
+            groupName: this.addruleForm.addOtherName,
+            groupImage: `/base/org/1/file?file=${this.picName}`
           };
+          console.log(this.picName);
           const loadingInstance = Loading.service({
             fullscreen: true,
             lock: true,
@@ -187,6 +200,7 @@ export default {
       // 编辑保存别名
       this.$refs["editruleForm"].validate(valid => {
         if (valid) {
+          console.log(1, this.picName);
           const params = {
             groupName: this.editruleForm.editOtherName
           };
