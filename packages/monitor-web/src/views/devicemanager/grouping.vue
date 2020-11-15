@@ -75,8 +75,11 @@
           <el-form-item label="别名" prop="editOtherName">
             <el-input v-model="editruleForm.editOtherName" />
           </el-form-item>
-          <el-form-item label="上传分组图片">
-            <uploadPic v-if="centerDialogVisible" v-model="picName"
+          <el-form-item label="分组图片" prop="editOtherName">
+            <img style="width:120px;height: 80px;" :src="editruleForm.pic" />
+          </el-form-item>
+          <el-form-item label="替换分组图片">
+            <uploadPic v-if="editVisible" v-model="picName"
           /></el-form-item>
         </el-form>
       </span>
@@ -127,7 +130,8 @@ export default {
         addOtherName: "" // 别名
       },
       editruleForm: {
-        editOtherName: "" // 编辑别名
+        editOtherName: "", // 编辑别名
+        pic: ""
       },
       rules: {
         addOtherName: [
@@ -163,6 +167,8 @@ export default {
     editgroup(item) {
       this.editId = item.groupId;
       this.editVisible = true;
+      this.editruleForm.editOtherName = item.groupName;
+      this.editruleForm.pic = `https://zckj.gudonger.com/${item.groupImage}`;
     },
     saveGroup() {
       // 新增组名
