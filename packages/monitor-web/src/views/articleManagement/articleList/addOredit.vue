@@ -60,7 +60,7 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="文章内容:" class="fuwenben">
-        <div ref="editor" class="editor" style="width: 900px;" />
+        <div ref="editor" class="editor" style="width: 1000px;" />
       </el-form-item>
     </el-form>
     <el-button :loading="loading" type="primary" @click="save" class="mg_L160"
@@ -118,8 +118,8 @@ export default {
     });
     let editor = new E(this.$refs.editor);
     const editId = this.$route.query.id;
-    editor.customConfig.uploadImgServer = this.action_url; // 上传图片到服务器
-    editor.customConfig.customUploadImg = (files, insert) => {
+    editor.config.uploadImgServer = this.action_url; // 上传图片到服务器
+    editor.config.customUploadImg = (files, insert) => {
       // insert 是获取图片 url 后，插入到编辑器的方法
       this.beforeAvatarUpload(files)
         .then(formData => {
@@ -135,7 +135,7 @@ export default {
           this.$message.error("获取上传签名失败,请稍后再试");
         });
     };
-    editor.customConfig.onchange = html => {
+    editor.config.onchange = html => {
       this.form.content = html;
     };
     editor.create();
