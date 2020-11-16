@@ -36,7 +36,6 @@ export default {
   methods: {
     to() {
       const _this = this.$refs.form;
-      debugger;
       _this.getRoles();
       _this.getDepts();
       _this.getRoleLevel();
