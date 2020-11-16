@@ -33,8 +33,9 @@ module.exports = {
   runtimeCompiler: true,
   devServer: {
     host: "127.0.0.1",
-    port: 8888,
+    port: 8080,
     open: true,
+    hot: true,
     overlay: {
       warnings: false,
       errors: true

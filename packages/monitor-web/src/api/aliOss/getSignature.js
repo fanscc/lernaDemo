@@ -15,5 +15,3 @@ export function uploadWangEditor(url, objs, onUploadProgress) {
     onUploadProgress
   });
 }
-
-

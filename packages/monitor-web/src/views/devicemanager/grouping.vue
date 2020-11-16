@@ -39,7 +39,12 @@
     </div>
 
     <!-- 新增用户 -->
-    <el-dialog :visible.sync="centerDialogVisible" title="新增分组" center>
+    <el-dialog
+      wdith="600px"
+      :visible.sync="centerDialogVisible"
+      title="新增分组"
+      center
+    >
       <span>
         <el-form
           ref="addruleForm"
@@ -52,7 +57,7 @@
             <el-input v-model="addruleForm.addOtherName" />
           </el-form-item>
           <el-form-item label="上传分组图片">
-            <uploadPic v-if="centerDialogVisible" v-model="picName"
+            <cropUploadPic v-if="centerDialogVisible" v-model="picName"
           /></el-form-item>
         </el-form>
       </span>
@@ -79,7 +84,7 @@
             <img style="width:120px;height: 80px;" :src="editruleForm.pic" />
           </el-form-item>
           <el-form-item label="替换分组图片">
-            <uploadPic v-if="editVisible" v-model="picName"
+            <cropUploadPic v-if="editVisible" v-model="picName"
           /></el-form-item>
         </el-form>
       </span>
@@ -100,7 +105,7 @@ import {
   getsearchGroup
 } from "@/api/equipment";
 import { Loading } from "element-ui";
-import uploadPic from "@/components/uploadpic/upload";
+import cropUploadPic from "@/components/uploadAvatar/index";
 export default {
   name: "Gateway",
   data: function() {
@@ -144,7 +149,7 @@ export default {
     };
   },
   components: {
-    uploadPic
+    cropUploadPic
   },
   created() {
     this.init();
@@ -206,9 +211,9 @@ export default {
       // 编辑保存别名
       this.$refs["editruleForm"].validate(valid => {
         if (valid) {
-          console.log(1, this.picName);
           const params = {
-            groupName: this.editruleForm.editOtherName
+            groupName: this.editruleForm.editOtherName,
+            groupImage: `/base/org/1/file?file=${this.picName}`
           };
           const loadingInstance = Loading.service({
             fullscreen: true,
@@ -311,7 +316,7 @@ export default {
     }
   }
   /deep/ .el-dialog {
-    width: 450px;
+    width: 610px;
     max-height: 70%;
     overflow: auto;
   }
