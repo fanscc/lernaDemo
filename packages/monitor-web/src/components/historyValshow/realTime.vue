@@ -44,8 +44,8 @@ export default {
       mapShow: false,
       center: { lng: 116.423493, lat: 39.907445 },
       position: {
-        lat: "",
-        lng: ""
+        lat: 108.24638537655021,
+        lng: 22.846246661096732
       },
       mapObjs: {
         url: "http://developer.baidu.com/map/jsdemo/img/car.png",
@@ -138,8 +138,8 @@ export default {
             this.polylinePath.push(ite);
             this.position.lat = ite.lat;
             this.position.lng = ite.lng;
-            this.center.lat = ite.lat;
-            this.center.lng = ite.lng;
+            const view = this.$refs.map.map.getViewport(this.polylinePath);
+            this.center = view.center;
           }
           console.log(this.position);
         } catch (error) {

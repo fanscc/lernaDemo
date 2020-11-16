@@ -209,6 +209,10 @@ export default {
       }, 30);
     },
     timeChage() {
+      if (this.times) {
+        clearInterval(this.times);
+        this.times = null;
+      }
       this.$refs.checkValidateForm.validate(valid => {
         if (valid) {
           if (!this.ValidateForm.toTime || !this.ValidateForm.fromTime) return;
