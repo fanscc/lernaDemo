@@ -3,7 +3,10 @@
     <h3 class="nodeDetail_nav">
       {{ nodeName }} <i v-popover:popover class="el-icon-question styleShow" />
     </h3>
-    <div v-show="sensorValues" class="temperature_conten">
+    <div
+      v-show="sensorValues && sensorValues.length > 0"
+      class="temperature_conten"
+    >
       <p v-for="(item, index) in sensorValues" :key="index">
         <span class="clickColor" @click="showDialog(item)"
           >{{ fiterName(item.sensor) }}:</span

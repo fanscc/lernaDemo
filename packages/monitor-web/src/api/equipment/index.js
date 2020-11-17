@@ -1,6 +1,9 @@
 import request from "@/utils/request";
+import Cookies from "js-cookie";
 // 获取所有分组列表
-const uid = JSON.parse(localStorage.getItem("userId"));
+const uid =
+  JSON.parse(localStorage.getItem("userId")) ||
+  JSON.parse(Cookies.get("userId"));
 export function getGroup() {
   return request({
     url: `/newman/group`,
