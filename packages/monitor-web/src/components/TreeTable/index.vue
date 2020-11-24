@@ -93,10 +93,11 @@ export default {
     showRow: function(row) {
       const show = (row.row.parent ? (row.row.parent._expanded && row.row.parent._show) : true)
       row.row._show = show
-      return show ? 'animation:treeTableShow 1s;-webkit-animation:treeTableShow 1s;' : 'display:none;'
+      return show ? 'animation:treeTableShow 1s;-webkit-animation:treeTableShow 1s;' : {display:'none'}
     },
     // 切换下级是否展开
     toggleExpanded: function(trIndex) {
+      debugger
       const record = this.formatData[trIndex]
       record._expanded = !record._expanded
     },
