@@ -41,12 +41,14 @@
         class="addFrom"
         pane="labelPane"
         @draw="draw(point, $event.map, $event.el)"
+        @click.stop
       >
-        <div v-show="point.show" class="nodeInfo">
+        <div v-show="point.show" class="nodeInfo" @click.stop>
           <div class="node-title">
             <span>添加标记</span>
           </div>
           <div>
+            <input type="text" value="" />
             <el-form label-width="80px" :model="formLabelAlign">
               <el-form-item label="名称">
                 <el-input v-model="formLabelAlign.name"></el-input>
@@ -178,6 +180,7 @@ export default {
       console.log(BMap);
     },
     getPoint(e) {
+      alert(1);
       if (!this.dragFlag) return;
       this.dragFlag = false;
       this.locationPoint.push({
@@ -321,5 +324,6 @@ export default {
   position: absolute;
   transform: translate(-50%, -100%);
   margin-top: -64px;
+  z-index: 9999999;
 }
 </style>
