@@ -132,15 +132,18 @@
         </div>
       </div>
     </div>
+    <operation v-if="operationShow" ref="operationDom"></operation>
   </div>
 </template>
 
 <script>
+import operation from "./operation.vue";
 export default {
   data() {
     return {
       loading: false,
       active: false,
+      operationShow: false,
       zoom: 20,
       resolve_self: null,
       location: "",
@@ -161,6 +164,9 @@ export default {
       editInfowindow: null, // 编辑信息框
       markObject: null // 现在展开的是哪个
     };
+  },
+  components: {
+    operation
   },
   created() {},
   methods: {
@@ -318,7 +324,10 @@ export default {
       this.$refs.map.map.removeOverlay(target);
     },
     operation() {
-      alert("填写操作记录");
+      this.operationShow = true;
+      this.$nextTick(() => {
+        this.$refs.operationDom.open();
+      });
     }
   }
 };
