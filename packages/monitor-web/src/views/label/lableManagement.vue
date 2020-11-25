@@ -28,43 +28,15 @@
         :showAddressBar="true"
         :autoLocation="true"
       ></bm-geolocation>
-      <!-- <bm-marker
-        v-for="(ite, index) in locationPoint"
+      <bm-label
+        v-for="(item, index) in locationPoint"
         :key="index"
-        :position="ite"
-        :icon="mapObjs"
-        :offset="{ width: 30, height: -20 }"
-      /> -->
-      <bm-overlay
-        v-for="(point, index) in locationPoint"
-        :key="index"
-        class="addFrom"
-        pane="labelPane"
-        @draw="draw(point, $event.map, $event.el)"
-        @click.stop
-      >
-        <div v-show="point.show" class="nodeInfo" @click.stop>
-          <div class="node-title">
-            <span>添加标记</span>
-          </div>
-          <div>
-            <input type="text" value="" />
-            <el-form label-width="80px" :model="formLabelAlign">
-              <el-form-item label="名称">
-                <el-input v-model="formLabelAlign.name"></el-input>
-              </el-form-item>
-              <el-form-item label="备注">
-                <el-input v-model="formLabelAlign.remark"></el-input>
-              </el-form-item>
-            </el-form>
-            <div class="bj_footer">
-              <el-button type="primary" @click="save">保存</el-button>
-              <el-button type="danger">删除</el-button>
-            </div>
-          </div>
-        </div>
-      </bm-overlay>
-
+        content="我爱北京天安门"
+        :position="{ lng: item.lng, lat: item.lat }"
+        :labelStyle="{ color: 'red', fontSize: '12px' }"
+        :offset="{ width: -35, height: -75 }"
+        title="Hover me"
+      />
       <bm-control class="sample" :offset="{ left: '500px', height: '210px' }">
         <bm-auto-complete v-model="location" :sug-style="{ zIndex: 1 }">
           <el-input
@@ -93,13 +65,73 @@
           top: iconMarkPosition.top + 'px'
         }"
       >
-        <img
-          style="width: 64px; height: 64px;"
-          src="https://zckj.gudonger.com/base/org/1/file?file=1/gate/BZ.png_1606202652700"
-        />
+        <img style="width: 32px; height: 32px;" src="../../assets/iconBZ.png" />
         <span style="color: red">停下来后点击地图标记</span>
       </span>
     </baidu-map>
+    <div class="nodeInfo" ref="infoWindowDom">
+      <div class="node-title">
+        <span>添加标记</span>
+      </div>
+      <div>
+        <el-form label-width="80px" :model="formLabelAlign">
+          <el-form-item label="名称">
+            <input type="text" value="" id="infoName" />
+          </el-form-item>
+          <el-form-item label="备注">
+            <textarea type="text" value="" id="infoRemark" />
+          </el-form-item>
+        </el-form>
+        <div
+          class="bj_footer"
+          style="display: flex;justify-content: center;align-items: center;"
+        >
+          <el-button type="primary" @click="save" id="save">保存</el-button>
+          <el-button type="danger" id="cancel">删除</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="nodeInfo" ref="detailInfoWindowDom">
+      <div class="node-title">
+        <span>标记详情</span>
+      </div>
+      <div>
+        <div>
+          <p><span>名称:</span><span>最好的茶业树</span></p>
+          <p><span>备注:</span><span>需要好好培养</span></p>
+        </div>
+        <div
+          class="bj_footer"
+          style="display: flex;justify-content: center;align-items: center;"
+        >
+          <el-button type="primary" id="edit">修改</el-button>
+          <el-button type="plain" id="operation">操作管理</el-button>
+          <el-button type="danger" id="cancel">删除</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="nodeInfo" ref="editInfoWindowDom">
+      <div class="node-title">
+        <span>编辑标记</span>
+      </div>
+      <div>
+        <el-form label-width="80px" :model="formLabelAlign">
+          <el-form-item label="名称">
+            <input type="text" value="" id="infoName" />
+          </el-form-item>
+          <el-form-item label="备注">
+            <textarea type="text" value="" id="infoRemark" />
+          </el-form-item>
+        </el-form>
+        <div
+          class="bj_footer"
+          style="display: flex;justify-content: center;align-items: center;"
+        >
+          <el-button type="primary" id="save">保存</el-button>
+          <el-button type="danger" id="cancel">删除</el-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -113,12 +145,6 @@ export default {
       resolve_self: null,
       location: "",
       locationPoint: [],
-      mapObjs: {
-        // url: "http://developer.baidu.com/map/jsdemo/img/car.png",
-        url:
-          "https://zckj.gudonger.com/base/org/1/file?file=1/gate/BZ.png_1606202652700",
-        size: { width: 64, height: 64 }
-      },
       centerPoint: { lng: "113.318977", lat: "23.114155" },
       dragFlag: false,
       iconMarkPosition: {
@@ -129,9 +155,14 @@ export default {
         // 新增标注
         name: "",
         remark: ""
-      }
+      },
+      infoWindow: null, // 新增信息框
+      detailInfoWindow: null, // 详情信息框
+      editInfowindow: null, // 编辑信息框
+      markObject: null // 现在展开的是哪个
     };
   },
+  created() {},
   methods: {
     draw(region, map, el) {
       const pixel = map.pointToOverlayPixel({
@@ -161,26 +192,90 @@ export default {
       this.$nextTick(() => {
         let point = new this.$refs.map.BMap.Point(ite.lng, ite.lat);
         let myIcon = new this.$refs.map.BMap.Icon(
-          "https://zckj.gudonger.com/base/org/1/file?file=1/gate/BZ.png_1606202652700",
-          new this.$refs.map.BMap.Size(64, 64),
+          require("@/assets/iconBZ.png"),
+          new this.$refs.map.BMap.Size(32, 32),
           { anchor: new this.$refs.map.BMap.Size(10, 50) }
         );
         let marker = new this.$refs.map.BMap.Marker(point, {
           icon: myIcon
         });
         this.$refs.map.map.addOverlay(marker);
-        _this.$set(ite, "show", true);
+        marker.openInfoWindow(_this.infoWindow);
+        this.markObject = marker;
+        //判断窗口的打开状态
+        if (!_this.infoWindow.isOpen()) {
+          //如果没有打开，则监听打开事件，获取按钮，添加事件
+          _this.infoWindow.addEventListener("open", function() {
+            document.getElementById("save").onclick = function() {
+              _this.save();
+            };
+            document.getElementById("cancel").onclick = function() {
+              _this.remove(_this.markObject);
+            };
+          });
+        } else {
+          //如果已经打开，直接获取按钮，添加事件
+          document.getElementById("save").onclick = function() {
+            _this.save();
+          };
+          document.getElementById("cancel").onclick = function() {
+            _this.remove(_this.markObject);
+          };
+        }
         marker.addEventListener("click", function() {
-          _this.$set(ite, "show", !ite.show);
+          _this.markObject = this;
+          this.openInfoWindow(_this.detailInfoWindow);
+          //判断窗口的打开状态
+          if (!_this.detailInfoWindow.isOpen()) {
+            //如果没有打开，则监听打开事件，获取按钮，添加事件
+            _this.detailInfoWindow.addEventListener("open", function() {
+              document.getElementById("edit").onclick = function() {
+                _this.edit();
+              };
+              document.getElementById("cancel").onclick = function() {
+                _this.remove(_this.markObject);
+              };
+              document.getElementById("operation").onclick = function() {
+                _this.operation();
+              };
+            });
+          } else {
+            //如果已经打开，直接获取按钮，添加事件
+            document.getElementById("edit").onclick = function() {
+              _this.edit();
+            };
+            document.getElementById("cancel").onclick = function() {
+              _this.remove(_this.markObject);
+            };
+            document.getElementById("operation").onclick = function() {
+              _this.operation();
+            };
+          }
         });
       });
     },
     handler({ BMap }) {
       this.$refs.map.map.setMapType(BMAP_SATELLITE_MAP);
       console.log(BMap);
+      this.$nextTick(() => {
+        let sContent = this.$refs.infoWindowDom.innerHTML;
+        this.infoWindow = new this.$refs.map.BMap.InfoWindow(sContent, {
+          offset: { width: 20, height: -50 }
+        });
+        let detailInfoWindow = this.$refs.detailInfoWindowDom.innerHTML;
+        this.detailInfoWindow = new this.$refs.map.BMap.InfoWindow(
+          detailInfoWindow,
+          {
+            offset: { width: 20, height: -50 }
+          }
+        );
+        let editConten = this.$refs.editInfoWindowDom.innerHTML;
+        this.editInfowindow = new this.$refs.map.BMap.InfoWindow(editConten, {
+          offset: { width: 20, height: -50 }
+        });
+      });
     },
     getPoint(e) {
-      alert(1);
       if (!this.dragFlag) return;
       this.dragFlag = false;
       this.locationPoint.push({
@@ -189,8 +284,41 @@ export default {
       });
       this.add_mark(this.locationPoint[this.locationPoint.length - 1]);
     },
-    save() {
-      alert(1);
+    save(type) {
+      console.log(type);
+      var name = document.getElementById("infoName").value;
+      var remark = document.getElementById("infoRemark").value;
+      console.log(55, name);
+      console.log(551, remark);
+    },
+    edit() {
+      this.markObject.openInfoWindow(this.editInfowindow);
+      let _this = this;
+      if (!this.editInfowindow.isOpen()) {
+        //如果没有打开，则监听打开事件，获取按钮，添加事件
+        this.editInfowindow.addEventListener("open", function() {
+          document.getElementById("save").onclick = function() {
+            _this.save();
+          };
+          document.getElementById("cancel").onclick = function() {
+            _this.remove(_this.markObject);
+          };
+        });
+      } else {
+        //如果已经打开，直接获取按钮，添加事件
+        document.getElementById("save").onclick = function() {
+          _this.save();
+        };
+        document.getElementById("cancel").onclick = function() {
+          _this.remove(_this.markObject);
+        };
+      }
+    },
+    remove(target) {
+      this.$refs.map.map.removeOverlay(target);
+    },
+    operation() {
+      alert("填写操作记录");
     }
   }
 };
@@ -214,13 +342,11 @@ export default {
   z-index: 9999;
 }
 .nodeInfo {
+  display: none;
   color: #000;
   box-shadow: 0 0 5px #000;
   background: #fff;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   p,
   ul {
     margin: 0;
@@ -228,11 +354,6 @@ export default {
   }
   ul > li {
     list-style: none;
-  }
-  .bj_footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 .nodeInfo::after {
