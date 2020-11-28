@@ -1,5 +1,34 @@
 <template>
-  <div style="height: 100%;position: relative;">
+  <div style="height: 100%;">
+    <div class="node-map-wrap_nav">
+      <!-- <selfCascader :path="PATH" @gateSwitch="gateSwitch" /> -->
+      <div class="classFlex">
+        <el-select
+          v-model="selectGate"
+          filterable
+          placeholder="请选择"
+          @change="gatewaySwicth"
+        >
+          <el-option
+            v-for="item in groupArr"
+            :key="item.groupId"
+            :label="item.groupName"
+            :value="item.groupId"
+          >
+          </el-option>
+        </el-select>
+        <el-input
+          style="width: 160px"
+          v-model="markName"
+          placeholder="标注名称"
+        ></el-input>
+        <el-button size="mini">查询</el-button>
+      </div>
+      <p class="dashboard-container_nav_title">
+        <font style="color: #42b983;margin-right:4px">{{ groupName }}</font
+        >分组下所有标注信息
+      </p>
+    </div>
     <baidu-map
       v-loading="loading"
       element-loading-text="获取位置中..."
@@ -78,6 +107,13 @@
           <el-form-item label="名称">
             <input type="text" value="" id="infoName" />
           </el-form-item>
+          <el-form-item label="标准类别">
+            <select onchange="sclick()" style="width: 162px">
+              <option value="1">茶树</option>
+              <option value="2">茶树1</option>
+              <option value="3">茶树2</option>
+            </select>
+          </el-form-item>
           <el-form-item label="备注">
             <textarea type="text" value="" id="infoRemark" />
           </el-form-item>
@@ -119,6 +155,13 @@
           <el-form-item label="名称">
             <input type="text" value="" id="infoName" />
           </el-form-item>
+          <el-form-item label="标准类别">
+            <select onchange="sclick()" style="width: 162px">
+              <option value="1">茶树</option>
+              <option value="2">茶树1</option>
+              <option value="3">茶树2</option>
+            </select>
+          </el-form-item>
           <el-form-item label="备注">
             <textarea type="text" value="" id="infoRemark" />
           </el-form-item>
@@ -138,6 +181,7 @@
 
 <script>
 import operation from "./operation.vue";
+import { getGroup } from "@/api/equipment";
 export default {
   data() {
     return {
@@ -146,6 +190,10 @@ export default {
       operationShow: false,
       zoom: 20,
       resolve_self: null,
+      selectGate: "",
+      markName: "",
+      groupArr: [],
+      groupName: "",
       location: "",
       locationPoint: [],
       centerPoint: { lng: "113.318977", lat: "23.114155" },
@@ -157,8 +205,14 @@ export default {
       formLabelAlign: {
         // 新增标注
         name: "",
-        remark: ""
+        remark: "",
+        markType: ""
       },
+      markOptions: [
+        { label: "茶树", value: 1 },
+        { label: "茶树1", value: 2 },
+        { label: "茶树2", value: 3 }
+      ],
       infoWindow: null, // 新增信息框
       detailInfoWindow: null, // 详情信息框
       editInfowindow: null, // 编辑信息框
@@ -168,8 +222,19 @@ export default {
   components: {
     operation
   },
-  created() {},
+  created() {
+    window.sclick = function() {
+      alert(222);
+    };
+    this.init();
+  },
   methods: {
+    init() {
+      getGroup().then(res => {
+        this.groupArr = res.result;
+        this.groupName = this.groupArr[0] && this.groupArr[0].groupName;
+      });
+    },
     draw(region, map, el) {
       const pixel = map.pointToOverlayPixel({
         lng: region.lng,
@@ -181,16 +246,26 @@ export default {
     moveICON(e) {
       if (this.dragFlag) {
         e = e || window.event;
-        this.iconMarkPosition.left = e.clientX - 35;
-        this.iconMarkPosition.top = e.clientY - 130;
+        this.iconMarkPosition.left = e.clientX - this.disX + 30;
+        this.iconMarkPosition.top = e.clientY - this.disY + 50;
+      }
+    },
+    gatewaySwicth(val) {
+      for (let i = 0; i < this.groupArr.length; i++) {
+        if (val === this.groupArr[i].groupId) {
+          this.groupName = this.groupArr[i].groupName;
+          return;
+        }
       }
     },
     addMark(e) {
       this.dragFlag = true;
       this.$nextTick(() => {
         e = e || window.event;
-        this.iconMarkPosition.left = e.clientX - 35;
-        this.iconMarkPosition.top = e.clientY - 130;
+        this.disX = e.clientX - e.target.offsetLeft;
+        this.disY = e.clientY - e.target.offsetTop;
+        this.iconMarkPosition.left = e.clientX - this.disX + 30;
+        this.iconMarkPosition.top = e.clientY - this.disY + 50;
       });
     },
     add_mark(ite) {
@@ -321,6 +396,15 @@ export default {
       }
     },
     remove(target) {
+      // 删除对应的locationPoint对应的数据
+      for (let i = 0; i < this.locationPoint.length; i++) {
+        if (
+          this.locationPoint[i].lng === target.point.lng &&
+          this.locationPoint[i].lat === target.point.lat
+        ) {
+          this.locationPoint.splice(i, 1);
+        }
+      }
       this.$refs.map.map.removeOverlay(target);
     },
     operation() {
@@ -335,7 +419,10 @@ export default {
 
 <style lang="scss" scoped>
 .map {
-  height: 100%;
+  height: calc(100% - 40px);
+}
+.classFlex {
+  display: flex;
 }
 .sample {
   width: 500px;
@@ -356,6 +443,7 @@ export default {
   box-shadow: 0 0 5px #000;
   background: #fff;
   padding: 20px;
+  padding-right: 50px;
   p,
   ul {
     margin: 0;
@@ -455,5 +543,19 @@ export default {
   transform: translate(-50%, -100%);
   margin-top: -64px;
   z-index: 9999999;
+}
+.node-map-wrap_nav {
+  position: relative;
+  height: 40px;
+  line-height: 40px;
+}
+.dashboard-container_nav_title {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>

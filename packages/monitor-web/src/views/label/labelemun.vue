@@ -8,8 +8,8 @@
       size="small"
       style="width: 100%;"
     >
-      <el-table-column prop="name" label="作物名称" />
-      <el-table-column prop="tag" label="作物标签" />
+      <el-table-column prop="name" label="标注名称" />
+      <el-table-column prop="tag" label="描述" />
       <el-table-column label="操作" width="130px" align="center">
         <template slot-scope="scope">
           <edit :data.sync="scope.row" />
@@ -57,7 +57,7 @@ import initData from "@/mixins/initData";
 import { parseTime } from "@/utils/index";
 import eHeader from "./module/header";
 import edit from "./module/edit";
-import { delCrop } from "../../../api/operatingSystem";
+import { delCrop } from "../../api/operatingSystem";
 
 export default {
   components: { eHeader, edit },

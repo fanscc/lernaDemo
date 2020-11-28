@@ -8,8 +8,7 @@
       :data="formData"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
-      :limit="1"
-      :class="[formData.key !== '' ? 'dispalyHidden' : '']"
+      :class="[formData.key !== '' && !multiple ? 'dispalyHidden' : '']"
       class="upload_style"
       list-type="picture-card"
     >
@@ -31,6 +30,10 @@ export default {
     addMacId: {
       type: String,
       default: ""
+    },
+    multiple: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -79,9 +82,11 @@ export default {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
-    handleRemove() {
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
       this.formData.key = "";
       this.$emit("input", "");
+      this.$emit("remove", file);
     }
   }
 };
