@@ -13,7 +13,7 @@
             v-for="(activity, index) in activities"
             color="#0bbd87"
             :key="index"
-            :timestamp="String(activity.recordTime)"
+            :timestamp="format(activity.recordTime)"
           >
             <span class="conten_btn" @click="openMark(activity)">{{
               activity.detail
@@ -51,6 +51,7 @@ export default {
   },
   methods: {
     open(id) {
+      this.activities = [];
       this.drawer = true;
       this.id = id;
       this.init();
@@ -59,6 +60,16 @@ export default {
       getBaseThingRecord({ thingId: this.id }).then(res => {
         this.activities = res.result;
       });
+    },
+    add0(m) {
+      return m < 10 ? "0" + m : m;
+    },
+    format(times) {
+      let time = new Date(times);
+      let y = time.getFullYear();
+      let m = time.getMonth() + 1;
+      let d = time.getDate();
+      return y + "-" + this.add0(m) + "-" + this.add0(d);
     },
     openMark(activity) {
       this.operationMarkVisition = true;

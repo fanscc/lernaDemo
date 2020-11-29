@@ -81,10 +81,10 @@ export function addBaseThingRecord(data) {
     data: data
   });
 }
-
-export function editBaseThingRecord(data) {
+// 编辑标点
+export function editBaseThingRecord(data, id) {
   return request({
-    url: `/base/thingRecord`,
+    url: `/base/thingRecord/${id}`,
     method: "put",
     data: data
   });

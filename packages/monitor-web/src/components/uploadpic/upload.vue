@@ -10,6 +10,7 @@
       :on-remove="handleRemove"
       :class="[formData.key !== '' && !multiple ? 'dispalyHidden' : '']"
       class="upload_style"
+      :file-list="fileList"
       list-type="picture-card"
     >
       <i class="el-icon-plus" />
@@ -34,6 +35,10 @@ export default {
     multiple: {
       type: Boolean,
       default: false
+    },
+    fileList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {

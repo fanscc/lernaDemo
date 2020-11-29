@@ -59,16 +59,18 @@
         :showAddressBar="true"
         :autoLocation="true"
       ></bm-geolocation>
-      <bm-label
-        v-for="item in locationPoint"
-        :key="item.lng + item.lat + item.name"
-        :content="item.name"
-        :position="{ lng: item.lng, lat: item.lat }"
-        :labelStyle="{ color: 'red', fontSize: '12px' }"
-        :offset="{ width: 0, height: -75 }"
-        title="Hover me"
-      />
-      <bm-control class="sample" :offset="{ left: '500px', height: '210px' }">
+      <template v-if="locationPoint.length > 0">
+        <bm-label
+          v-for="item in locationPoint"
+          :key="item.lng + item.lat + item.name"
+          :content="item.name"
+          :position="{ lng: item.lng, lat: item.lat }"
+          :labelStyle="{ color: 'red', fontSize: '12px' }"
+          :offset="{ width: 0, height: -75 }"
+          title="Hover me"
+        />
+      </template>
+      <bm-control class="sample">
         <bm-auto-complete v-model="location" :sug-style="{ zIndex: 1 }">
           <el-input
             style="width: 250px;"
@@ -226,6 +228,7 @@ export default {
       detailInfoWindow: null, // 详情信息框
       editInfowindow: null, // 编辑信息框
       markObject: null, // 现在展开的是哪个
+      markArr: [], // 存放的mark数组
       self_resolve: null,
       self_pormise: null
     };
@@ -276,8 +279,13 @@ export default {
     },
     getMark(name = "", tags = "") {
       getBaseThing(name, tags).then(res => {
+        this.markArr.forEach(item => {
+          this.$refs.map.map.removeOverlay(item);
+        });
+        this.markArr = [];
+        this.$refs.map.map.removeOverlay(this.markObject);
+        this.locationPoint = [];
         this.locationPoint = res.result.map(item => {
-          this.$refs.map.map.clearOverlays();
           this.add_mark(
             {
               lng: item.longitude,
@@ -295,9 +303,11 @@ export default {
             lat: item.latitude
           };
         });
+        console.log(33, this.locationPoint);
         const view = this.$refs.map.map.getViewport(this.locationPoint);
         this.centerPoint = view.center;
         this.zoom = view.zoom;
+        this.$forceUpdate();
       });
     },
     draw(region, map, el) {
@@ -338,6 +348,7 @@ export default {
           icon: myIcon
         });
         marker.id = id;
+        this.markArr.push(marker);
         this.$refs.map.map.addOverlay(marker);
         if (type !== "init") {
           marker.openInfoWindow(_this.infoWindow);
@@ -526,7 +537,11 @@ export default {
     operation() {
       this.operationShow = true;
       this.$nextTick(() => {
-        this.$refs.operationDom.open(this.markObject.id);
+        if (this.markObject.id) {
+          this.$refs.operationDom.open(this.markObject.id);
+        } else {
+          this.$message.warning("请先保存");
+        }
       });
     }
   }
