@@ -11,9 +11,9 @@
         >
           <el-option
             v-for="item in groupArr"
-            :key="item.groupId"
-            :label="item.groupName"
-            :value="item.groupId"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           >
           </el-option>
         </el-select>
@@ -22,12 +22,8 @@
           v-model="markName"
           placeholder="标注名称"
         ></el-input>
-        <el-button size="mini">查询</el-button>
+        <el-button>查询</el-button>
       </div>
-      <p class="dashboard-container_nav_title">
-        <font style="color: #42b983;margin-right:4px">{{ groupName }}</font
-        >分组下所有标注信息
-      </p>
     </div>
     <baidu-map
       v-loading="loading"
@@ -58,12 +54,12 @@
         :autoLocation="true"
       ></bm-geolocation>
       <bm-label
-        v-for="(item, index) in locationPoint"
-        :key="index"
-        content="我爱北京天安门"
+        v-for="item in locationPoint"
+        :key="item.lng + item.lat + item.name"
+        :content="item.name"
         :position="{ lng: item.lng, lat: item.lat }"
         :labelStyle="{ color: 'red', fontSize: '12px' }"
-        :offset="{ width: -35, height: -75 }"
+        :offset="{ width: 0, height: -75 }"
         title="Hover me"
       />
       <bm-control class="sample" :offset="{ left: '500px', height: '210px' }">
@@ -105,17 +101,20 @@
       <div>
         <el-form label-width="80px" :model="formLabelAlign">
           <el-form-item label="名称">
-            <input type="text" value="" id="infoName" />
+            <input type="text" value="" id="addinfoName" />
           </el-form-item>
-          <el-form-item label="标准类别">
-            <select onchange="sclick()" style="width: 162px">
-              <option value="1">茶树</option>
-              <option value="2">茶树1</option>
-              <option value="3">茶树2</option>
+          <el-form-item label="标点类别">
+            <select id="addtag" style="width: 162px">
+              <option
+                :value="item.id"
+                v-for="item in groupArr"
+                :key="item.id"
+                >{{ item.name }}</option
+              >
             </select>
           </el-form-item>
           <el-form-item label="备注">
-            <textarea type="text" value="" id="infoRemark" />
+            <textarea type="text" value="" id="addinfoRemark" />
           </el-form-item>
         </el-form>
         <div
@@ -133,8 +132,8 @@
       </div>
       <div>
         <div>
-          <p><span>名称:</span><span>最好的茶业树</span></p>
-          <p><span>备注:</span><span>需要好好培养</span></p>
+          <p><span>名称:</span><span id="detaisName"></span></p>
+          <p><span>备注:</span><span id="detaisbrief"></span></p>
         </div>
         <div
           class="bj_footer"
@@ -153,17 +152,20 @@
       <div>
         <el-form label-width="80px" :model="formLabelAlign">
           <el-form-item label="名称">
-            <input type="text" value="" id="infoName" />
+            <input type="text" value="" id="editinfoName" />
           </el-form-item>
-          <el-form-item label="标准类别">
-            <select onchange="sclick()" style="width: 162px">
-              <option value="1">茶树</option>
-              <option value="2">茶树1</option>
-              <option value="3">茶树2</option>
+          <el-form-item label="标点类别">
+            <select id="edittag" style="width: 162px">
+              <option
+                :value="item.id"
+                v-for="item in groupArr"
+                :key="item.id"
+                >{{ item.name }}</option
+              >
             </select>
           </el-form-item>
           <el-form-item label="备注">
-            <textarea type="text" value="" id="infoRemark" />
+            <textarea type="text" value="" id="editinfoRemark" />
           </el-form-item>
         </el-form>
         <div
@@ -181,7 +183,13 @@
 
 <script>
 import operation from "./operation.vue";
-import { getGroup } from "@/api/equipment";
+import {
+  baseTag,
+  getBaseThing,
+  addBaseThing,
+  editBaseThing,
+  deleteBaseThing
+} from "@/api/label/index";
 export default {
   data() {
     return {
@@ -208,31 +216,79 @@ export default {
         remark: "",
         markType: ""
       },
-      markOptions: [
-        { label: "茶树", value: 1 },
-        { label: "茶树1", value: 2 },
-        { label: "茶树2", value: 3 }
-      ],
       infoWindow: null, // 新增信息框
       detailInfoWindow: null, // 详情信息框
       editInfowindow: null, // 编辑信息框
-      markObject: null // 现在展开的是哪个
+      markObject: null, // 现在展开的是哪个
+      self_resolve: null,
+      self_pormise: null
     };
   },
   components: {
     operation
   },
   created() {
-    window.sclick = function() {
-      alert(222);
+    window.sclick = function(val) {
+      console.log(val);
     };
     this.init();
   },
   methods: {
     init() {
-      getGroup().then(res => {
+      this.self_pormise = new Promise(resolve => {
+        this.self_resolve = resolve;
+      });
+      baseTag().then(res => {
         this.groupArr = res.result;
-        this.groupName = this.groupArr[0] && this.groupArr[0].groupName;
+        this.$nextTick(() => {
+          this.self_pormise.then(() => {
+            let sContent = this.$refs.infoWindowDom.innerHTML;
+            this.infoWindow = new this.$refs.map.BMap.InfoWindow(sContent, {
+              offset: { width: 20, height: -50 }
+            });
+            let detailInfoWindow = this.$refs.detailInfoWindowDom.innerHTML;
+            this.detailInfoWindow = new this.$refs.map.BMap.InfoWindow(
+              detailInfoWindow,
+              {
+                offset: { width: 20, height: -50 }
+              }
+            );
+            let editConten = this.$refs.editInfoWindowDom.innerHTML;
+            this.editInfowindow = new this.$refs.map.BMap.InfoWindow(
+              editConten,
+              {
+                offset: { width: 20, height: -50 }
+              }
+            );
+            this.getMark();
+          });
+        });
+      });
+    },
+    getMark() {
+      getBaseThing().then(res => {
+        this.locationPoint = res.result.map(item => {
+          this.add_mark(
+            {
+              lng: item.longitude,
+              lat: item.latitude
+            },
+            item.id,
+            "init"
+          );
+          return {
+            id: item.id,
+            tags: item.tags,
+            name: item.name,
+            brief: item.brief,
+            lng: item.longitude,
+            lat: item.latitude
+          };
+        });
+        console.log(22, this.locationPoint);
+        const view = this.$refs.map.map.getViewport(this.locationPoint);
+        this.centerPoint = view.center;
+        this.zoom = view.zoom;
       });
     },
     draw(region, map, el) {
@@ -268,7 +324,7 @@ export default {
         this.iconMarkPosition.top = e.clientY - this.disY + 50;
       });
     },
-    add_mark(ite) {
+    add_mark(ite, id, type) {
       let _this = this;
       this.$nextTick(() => {
         let point = new this.$refs.map.BMap.Point(ite.lng, ite.lat);
@@ -280,8 +336,11 @@ export default {
         let marker = new this.$refs.map.BMap.Marker(point, {
           icon: myIcon
         });
+        marker.id = id;
         this.$refs.map.map.addOverlay(marker);
-        marker.openInfoWindow(_this.infoWindow);
+        if (type !== "init") {
+          marker.openInfoWindow(_this.infoWindow);
+        }
         this.markObject = marker;
         //判断窗口的打开状态
         if (!_this.infoWindow.isOpen()) {
@@ -304,17 +363,27 @@ export default {
           };
         }
         marker.addEventListener("click", function() {
+          _this.markObject = null;
           _this.markObject = this;
+          let editDatas = {};
+          for (let i = 0; i < _this.locationPoint.length; i++) {
+            if (_this.locationPoint[i].id === _this.markObject.id) {
+              editDatas = _this.locationPoint[i];
+              break;
+            }
+          }
           this.openInfoWindow(_this.detailInfoWindow);
+          document.getElementById("detaisName").innerHTML = editDatas.name;
+          document.getElementById("detaisbrief").innerHTML = editDatas.brief;
           //判断窗口的打开状态
           if (!_this.detailInfoWindow.isOpen()) {
             //如果没有打开，则监听打开事件，获取按钮，添加事件
             _this.detailInfoWindow.addEventListener("open", function() {
               document.getElementById("edit").onclick = function() {
-                _this.edit();
+                _this.edit(editDatas);
               };
               document.getElementById("cancel").onclick = function() {
-                _this.remove(_this.markObject);
+                _this.remove();
               };
               document.getElementById("operation").onclick = function() {
                 _this.operation();
@@ -323,10 +392,10 @@ export default {
           } else {
             //如果已经打开，直接获取按钮，添加事件
             document.getElementById("edit").onclick = function() {
-              _this.edit();
+              _this.edit(editDatas);
             };
             document.getElementById("cancel").onclick = function() {
-              _this.remove(_this.markObject);
+              _this.remove();
             };
             document.getElementById("operation").onclick = function() {
               _this.operation();
@@ -335,45 +404,74 @@ export default {
         });
       });
     },
-    handler({ BMap }) {
+    handler() {
       this.$refs.map.map.setMapType(BMAP_SATELLITE_MAP);
-      console.log(BMap);
-      this.$nextTick(() => {
-        let sContent = this.$refs.infoWindowDom.innerHTML;
-        this.infoWindow = new this.$refs.map.BMap.InfoWindow(sContent, {
-          offset: { width: 20, height: -50 }
-        });
-        let detailInfoWindow = this.$refs.detailInfoWindowDom.innerHTML;
-        this.detailInfoWindow = new this.$refs.map.BMap.InfoWindow(
-          detailInfoWindow,
-          {
-            offset: { width: 20, height: -50 }
-          }
-        );
-        let editConten = this.$refs.editInfoWindowDom.innerHTML;
-        this.editInfowindow = new this.$refs.map.BMap.InfoWindow(editConten, {
-          offset: { width: 20, height: -50 }
-        });
-      });
+      this.self_resolve();
     },
     getPoint(e) {
       if (!this.dragFlag) return;
       this.dragFlag = false;
       this.locationPoint.push({
         lng: e.point.lng,
-        lat: e.point.lat
+        lat: e.point.lat,
+        name: "未保存"
       });
       this.add_mark(this.locationPoint[this.locationPoint.length - 1]);
     },
-    save(type) {
-      console.log(type);
-      var name = document.getElementById("infoName").value;
-      var remark = document.getElementById("infoRemark").value;
-      console.log(55, name);
-      console.log(551, remark);
+    save() {
+      if (this.markObject.id) {
+        let name = document.getElementById("editinfoName").value;
+        let remark = document.getElementById("editinfoRemark").value;
+        let tag = document.getElementById("edittag").value;
+        if (!name) {
+          return this.$message.warning("请输入名称");
+        }
+        if (!tag) {
+          return this.$message.warning("请选择标点类型");
+        }
+        let datas = {
+          name: name,
+          brief: remark,
+          flag: "red",
+          latitude: this.markObject.point.lat,
+          longitude: this.markObject.point.lng
+        };
+        editBaseThing(datas, this.markObject.id, tag).then(() => {
+          this.$message.success("编辑标点成功");
+          this.markObject.closeInfoWindow();
+          this.getMark();
+        });
+      } else {
+        let name = document.getElementById("addinfoName").value;
+        let remark = document.getElementById("addinfoRemark").value;
+        let tag = document.getElementById("addtag").value;
+        if (!name) {
+          return this.$message.warning("请输入名称");
+        }
+        if (!tag) {
+          return this.$message.warning("请选择标点类型");
+        }
+        let datas = {
+          name: name,
+          brief: remark,
+          flag: "red",
+          latitude: this.markObject.point.lat,
+          longitude: this.markObject.point.lng
+        };
+        addBaseThing(datas, tag).then(() => {
+          this.$message.success("新增标点成功");
+          this.markObject.closeInfoWindow();
+          this.getMark();
+        });
+      }
     },
-    edit() {
+    edit(obj) {
       this.markObject.openInfoWindow(this.editInfowindow);
+      document.getElementById("editinfoName").value = obj.name;
+      document.getElementById("editinfoRemark").value = obj.brief;
+      if (obj.tags) {
+        document.getElementById("edittag").value = obj.tags;
+      }
       let _this = this;
       if (!this.editInfowindow.isOpen()) {
         //如果没有打开，则监听打开事件，获取按钮，添加事件
@@ -395,22 +493,39 @@ export default {
         };
       }
     },
-    remove(target) {
+    remove() {
       // 删除对应的locationPoint对应的数据
-      for (let i = 0; i < this.locationPoint.length; i++) {
-        if (
-          this.locationPoint[i].lng === target.point.lng &&
-          this.locationPoint[i].lat === target.point.lat
-        ) {
-          this.locationPoint.splice(i, 1);
+      if (this.markObject.id) {
+        deleteBaseThing(this.markObject.id).then(() => {
+          for (let i = 0; i < this.locationPoint.length; i++) {
+            if (
+              this.locationPoint[i].lng === this.markObject.point.lng &&
+              this.locationPoint[i].lat === this.markObject.point.lat
+            ) {
+              this.locationPoint.splice(i, 1);
+              this.$refs.map.map.removeOverlay(this.markObject);
+              break;
+            }
+          }
+          this.$message.success("标点删除成功");
+        });
+      } else {
+        for (let i = 0; i < this.locationPoint.length; i++) {
+          if (
+            this.locationPoint[i].lng === this.markObject.point.lng &&
+            this.locationPoint[i].lat === this.markObject.point.lat
+          ) {
+            this.locationPoint.splice(i, 1);
+            break;
+          }
         }
+        this.$refs.map.map.removeOverlay(this.markObject);
       }
-      this.$refs.map.map.removeOverlay(target);
     },
     operation() {
       this.operationShow = true;
       this.$nextTick(() => {
-        this.$refs.operationDom.open();
+        this.$refs.operationDom.open(this.markObject.id);
       });
     }
   }

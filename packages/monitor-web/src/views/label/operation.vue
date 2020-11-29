@@ -8,28 +8,33 @@
         >
       </div>
       <span>
-        <el-timeline>
+        <el-timeline v-if="activities.length > 0">
           <el-timeline-item
             v-for="(activity, index) in activities"
             color="#0bbd87"
             :key="index"
-            :timestamp="activity.timestamp"
+            :timestamp="String(activity.recordTime)"
           >
             <span class="conten_btn" @click="openMark(activity)">{{
-              activity.content
+              activity.detail
             }}</span>
           </el-timeline-item>
         </el-timeline>
+        <div v-else style="text-align: center;font-size: 18px;">
+          暂无操作记录
+        </div>
       </span>
     </el-drawer>
     <operationMark
       ref="operationMarkDom"
+      @refresh="init"
       v-if="operationMarkVisition"
     ></operationMark>
   </div>
 </template>
 <script>
 import operationMark from "./operationMark.vue";
+import { getBaseThingRecord } from "@/api/label/index";
 export default {
   name: "operation",
   components: {
@@ -37,39 +42,34 @@ export default {
   },
   data() {
     return {
+      id: "",
       drawer: false,
       operationMarkVisition: false,
       direction: "rtl",
-      activities: [
-        {
-          content: "活动按期开始",
-          timestamp: "2018-04-15"
-        },
-        {
-          content: "通过审核",
-          timestamp: "2018-04-13"
-        },
-        {
-          content: "创建成功",
-          timestamp: "2018-04-11"
-        }
-      ]
+      activities: []
     };
   },
   methods: {
-    open() {
+    open(id) {
       this.drawer = true;
+      this.id = id;
+      this.init();
+    },
+    init() {
+      getBaseThingRecord({ thingId: this.id }).then(res => {
+        this.activities = res.result;
+      });
     },
     openMark(activity) {
       this.operationMarkVisition = true;
       this.$nextTick(() => {
-        this.$refs.operationMarkDom.open(activity.content);
+        this.$refs.operationMarkDom.open(this.id, activity);
       });
     },
     addOperation() {
       this.operationMarkVisition = true;
       this.$nextTick(() => {
-        this.$refs.operationMarkDom.open();
+        this.$refs.operationMarkDom.open(this.id);
       });
     }
   }

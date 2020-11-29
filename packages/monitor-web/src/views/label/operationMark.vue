@@ -14,7 +14,7 @@
         type="textarea"
         :rows="4"
         placeholder="操作内容"
-        v-model="dataFrom.conten"
+        v-model="dataFrom.detail"
       >
       </el-input>
       <div v-if="type === 'detail'">
@@ -25,7 +25,7 @@
           v-if="dialogVisible"
           :multiple="true"
           @remove="remove"
-          v-model="picName"
+          v-model="images"
         />
       </div>
     </div>
@@ -40,6 +40,7 @@
 
 <script>
 import uploadPic from "@/components/uploadpic/upload";
+import { addBaseThingRecord, editBaseThingRecord } from "@/api/label/index";
 export default {
   name: "operationMark",
   components: {
@@ -48,47 +49,53 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      id: "",
       type: "detail",
-      picName: "",
+      images: "",
       dataFrom: {
-        conten: "",
-        picName: ""
+        thingId: "",
+        detail: "",
+        images: "",
+        recordTime: "2020-10-11"
       }
     };
   },
   watch: {
-    picName(val) {
+    images(val) {
       if (val) {
-        this.dataFrom.picName += "," + val;
+        this.dataFrom.images += "," + val;
       }
     }
   },
   methods: {
-    open(id = "") {
+    open(thingId = "", row = {}) {
       this.dialogVisible = true;
-      this.id = id;
-      this.type = this.id ? "detail" : "add";
+      this.dataFrom.thingId = thingId;
+      this.type = row.id ? "detail" : "add";
     },
     handleClose(done) {
       done();
     },
     remove(file) {
       // 删除
-      let picArr = this.dataFrom.picName.split(",");
+      let picArr = this.dataFrom.images.split(",");
       for (let i = 0; i < picArr.length; i++) {
         let item = picArr[i];
         if (!item) continue;
         if (item.indexOf(file.name) !== -1) {
           picArr.splice(i, 1);
-          this.dataFrom.picName = picArr.join(",");
+          this.dataFrom.images = picArr.join(",");
           return;
         }
       }
     },
     save() {
-      this.dataFrom.picName = this.dataFrom.picName.substring(1);
+      this.dataFrom.images = this.dataFrom.images.substring(1);
       console.log(this.dataFrom);
+      addBaseThingRecord(this.dataFrom).then(() => {
+        this.$message.success("操作记录新增成功");
+        this.dialogVisible = false;
+        this.$emit("refresh");
+      });
     }
   }
 };
