@@ -4,10 +4,11 @@
       <!-- <selfCascader :path="PATH" @gateSwitch="gateSwitch" /> -->
       <div class="classFlex">
         <el-select
-          v-model="selectGate"
+          v-model="tags"
+          multiple
           filterable
+          clear
           placeholder="请选择"
-          @change="gatewaySwicth"
         >
           <el-option
             v-for="item in groupArr"
@@ -22,7 +23,12 @@
           v-model="markName"
           placeholder="标注名称"
         ></el-input>
-        <el-button>查询</el-button>
+        <el-button
+          type="primary"
+          style="height:28px;margin-top: 4px;"
+          @click="search"
+          >查询</el-button
+        >
       </div>
     </div>
     <baidu-map
@@ -198,11 +204,11 @@ export default {
       operationShow: false,
       zoom: 20,
       resolve_self: null,
-      selectGate: "",
       markName: "",
       groupArr: [],
       groupName: "",
       location: "",
+      tags: [],
       locationPoint: [],
       centerPoint: { lng: "113.318977", lat: "23.114155" },
       dragFlag: false,
@@ -265,9 +271,13 @@ export default {
         });
       });
     },
-    getMark() {
-      getBaseThing().then(res => {
+    search() {
+      this.getMark({ name: this.markName }, this.tags.join(","));
+    },
+    getMark(name = "", tags = "") {
+      getBaseThing(name, tags).then(res => {
         this.locationPoint = res.result.map(item => {
+          this.$refs.map.map.clearOverlays();
           this.add_mark(
             {
               lng: item.longitude,
@@ -285,7 +295,6 @@ export default {
             lat: item.latitude
           };
         });
-        console.log(22, this.locationPoint);
         const view = this.$refs.map.map.getViewport(this.locationPoint);
         this.centerPoint = view.center;
         this.zoom = view.zoom;
@@ -304,14 +313,6 @@ export default {
         e = e || window.event;
         this.iconMarkPosition.left = e.clientX - this.disX + 30;
         this.iconMarkPosition.top = e.clientY - this.disY + 50;
-      }
-    },
-    gatewaySwicth(val) {
-      for (let i = 0; i < this.groupArr.length; i++) {
-        if (val === this.groupArr[i].groupId) {
-          this.groupName = this.groupArr[i].groupName;
-          return;
-        }
       }
     },
     addMark(e) {
