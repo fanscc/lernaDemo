@@ -79,7 +79,7 @@ export default {
         thingId: "",
         detail: "",
         images: "",
-        recordTime: "2020-10-11"
+        recordTime: new Date()
       }
     };
   },
@@ -115,6 +115,7 @@ export default {
       Object.keys(this.dataFrom).forEach(key => {
         this.dataFrom[key] = "";
       });
+      this.dataFrom.recordTime = new Date();
       this.imagesArr = [];
       done();
     },

@@ -98,7 +98,10 @@
           top: iconMarkPosition.top + 'px'
         }"
       >
-        <img style="width: 32px; height: 32px;" src="../../assets/iconBZ.png" />
+        <img
+          style="width: 32px; height: 32px;"
+          :src="imgMarkList[Number(flag) - 1]"
+        />
         <span style="color: red">停下来后点击地图标记</span>
       </span>
     </baidu-map>
@@ -123,6 +126,30 @@
           </el-form-item>
           <el-form-item label="备注">
             <textarea type="text" value="" id="addinfoRemark" />
+          </el-form-item>
+          <el-form-item label="标注颜色">
+            <span id="markIcon">
+              <i
+                index="1"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle1 activeFontStyle"
+              />
+              <i
+                index="2"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle2"
+              />
+              <i
+                index="3"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle3"
+              />
+              <i
+                index="4"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle4"
+              />
+              <i
+                index="5"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle5"
+              />
+            </span>
           </el-form-item>
         </el-form>
         <div
@@ -175,6 +202,30 @@
           <el-form-item label="备注">
             <textarea type="text" value="" id="editinfoRemark" />
           </el-form-item>
+          <el-form-item label="标注颜色">
+            <span id="markIcon">
+              <i
+                index="1"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle1 activeFontStyle"
+              />
+              <i
+                index="2"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle2"
+              />
+              <i
+                index="3"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle3"
+              />
+              <i
+                index="4"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle4"
+              />
+              <i
+                index="5"
+                class="iconfont iconmap-thumbtack-full fontStyle fontStyle5"
+              />
+            </span>
+          </el-form-item>
         </el-form>
         <div
           class="bj_footer"
@@ -224,6 +275,14 @@ export default {
         remark: "",
         markType: ""
       },
+      imgMarkList: [
+        require("@/assets/iconBZ.png"),
+        require("@/assets/yellow.png"),
+        require("@/assets/green.png"),
+        require("@/assets/blue.png"),
+        require("@/assets/hese.png")
+      ],
+      flag: "1", // 用的什么颜色的标注
       infoWindow: null, // 新增信息框
       detailInfoWindow: null, // 详情信息框
       editInfowindow: null, // 编辑信息框
@@ -291,6 +350,7 @@ export default {
               lng: item.longitude,
               lat: item.latitude
             },
+            item.flag,
             item.id,
             "init"
           );
@@ -335,12 +395,18 @@ export default {
         this.iconMarkPosition.top = e.clientY - this.disY + 50;
       });
     },
-    add_mark(ite, id, type) {
+    add_mark(ite, flag, id, type) {
       let _this = this;
       this.$nextTick(() => {
         let point = new this.$refs.map.BMap.Point(ite.lng, ite.lat);
+        let iconUrl = "";
+        if (flag && flag - 1) {
+          iconUrl = this.imgMarkList[flag - 1];
+        } else {
+          iconUrl = require("@/assets/iconBZ.png");
+        }
         let myIcon = new this.$refs.map.BMap.Icon(
-          require("@/assets/iconBZ.png"),
+          iconUrl,
           new this.$refs.map.BMap.Size(32, 32),
           { anchor: new this.$refs.map.BMap.Size(10, 50) }
         );
@@ -364,8 +430,12 @@ export default {
             document.getElementById("cancel").onclick = function() {
               _this.remove(_this.markObject);
             };
+            // 给标签添加监听器
+            _this.markIconAddMethod();
           });
         } else {
+          // 给标签添加监听器
+          _this.markIconAddMethod();
           //如果已经打开，直接获取按钮，添加事件
           document.getElementById("save").onclick = function() {
             _this.save();
@@ -428,7 +498,10 @@ export default {
         lat: e.point.lat,
         name: "未保存"
       });
-      this.add_mark(this.locationPoint[this.locationPoint.length - 1]);
+      this.add_mark(
+        this.locationPoint[this.locationPoint.length - 1],
+        this.flag
+      );
     },
     save() {
       if (this.markObject.id) {
@@ -444,7 +517,7 @@ export default {
         let datas = {
           name: name,
           brief: remark,
-          flag: "red",
+          flag: this.flag,
           latitude: this.markObject.point.lat,
           longitude: this.markObject.point.lng
         };
@@ -466,7 +539,7 @@ export default {
         let datas = {
           name: name,
           brief: remark,
-          flag: "red",
+          flag: this.flag,
           latitude: this.markObject.point.lat,
           longitude: this.markObject.point.lng
         };
@@ -477,6 +550,31 @@ export default {
         });
       }
     },
+    markIconAddMethod() {
+      document.getElementById("markIcon").addEventListener("click", e => {
+        // e.target是被点击的元素!
+        // 筛选触发事件的子元素如果是li执行的事件
+        if (e.target && e.target.nodeName.toLowerCase() === "i") {
+          // 获取到具体事件触发的li，输出其id
+          console.log("List item ", e.target.getAttribute("index"));
+          this.flag = e.target.getAttribute("index");
+          console.log(this.flag);
+          let fontStyleArr = document.getElementsByClassName("fontStyle");
+          for (let i = 0; i < fontStyleArr.length; i++) {
+            fontStyleArr[i].classList.remove("activeFontStyle");
+          }
+          e.target.classList.add("activeFontStyle");
+          let icoUrl = this.imgMarkList[this.flag - 1];
+          this.markObject.setIcon(
+            new this.$refs.map.BMap.Icon(
+              icoUrl,
+              new this.$refs.map.BMap.Size(32, 32),
+              { anchor: new this.$refs.map.BMap.Size(10, 50) }
+            )
+          );
+        }
+      });
+    },
     edit(obj) {
       this.markObject.openInfoWindow(this.editInfowindow);
       document.getElementById("editinfoName").value = obj.name;
@@ -486,6 +584,8 @@ export default {
       }
       let _this = this;
       if (!this.editInfowindow.isOpen()) {
+        // 给标签添加监听器
+        _this.markIconAddMethod();
         //如果没有打开，则监听打开事件，获取按钮，添加事件
         this.editInfowindow.addEventListener("open", function() {
           document.getElementById("save").onclick = function() {
@@ -496,6 +596,8 @@ export default {
           };
         });
       } else {
+        // 给标签添加监听器
+        _this.markIconAddMethod();
         //如果已经打开，直接获取按钮，添加事件
         document.getElementById("save").onclick = function() {
           _this.save();
@@ -508,19 +610,27 @@ export default {
     remove() {
       // 删除对应的locationPoint对应的数据
       if (this.markObject.id) {
-        deleteBaseThing(this.markObject.id).then(() => {
-          for (let i = 0; i < this.locationPoint.length; i++) {
-            if (
-              this.locationPoint[i].lng === this.markObject.point.lng &&
-              this.locationPoint[i].lat === this.markObject.point.lat
-            ) {
-              this.locationPoint.splice(i, 1);
-              this.$refs.map.map.removeOverlay(this.markObject);
-              break;
-            }
-          }
-          this.$message.success("标点删除成功");
-        });
+        this.$confirm("此操作将永久该标点, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            deleteBaseThing(this.markObject.id).then(() => {
+              for (let i = 0; i < this.locationPoint.length; i++) {
+                if (
+                  this.locationPoint[i].lng === this.markObject.point.lng &&
+                  this.locationPoint[i].lat === this.markObject.point.lat
+                ) {
+                  this.locationPoint.splice(i, 1);
+                  this.$refs.map.map.removeOverlay(this.markObject);
+                  break;
+                }
+              }
+              this.$message.success("标点删除成功");
+            });
+          })
+          .catch();
       } else {
         for (let i = 0; i < this.locationPoint.length; i++) {
           if (
@@ -688,5 +798,27 @@ export default {
   transform: translate(-50%, -50%);
   font-size: 20px;
   font-weight: bold;
+}
+.fontStyle {
+  padding: 6px;
+  cursor: pointer;
+}
+.fontStyle1 {
+  color: red;
+}
+.fontStyle2 {
+  color: #f4ea2a;
+}
+.fontStyle3 {
+  color: #1afa29;
+}
+.fontStyle4 {
+  color: #1296db;
+}
+.fontStyle5 {
+  color: #13227a;
+}
+.activeFontStyle {
+  border: 1px solid rgb(67, 48, 172);
 }
 </style>
