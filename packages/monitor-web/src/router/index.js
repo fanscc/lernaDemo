@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
         // 登录时未拉取 菜单，在此处拉取
       } else if (store.getters.loadMenus) {
         // 修改成false，防止死循环
-        store.dispatch("updateLoadMenus").then(() => {});
+        store.dispatch("updateLoadMenus").then(() => { });
         loadMenus(next, to);
       } else {
         next();

@@ -122,6 +122,7 @@ export default {
     init() {
       let promises = [];
       this.tables.forEach((item, index) => {
+        if (!item.category) return;
         promises[index] = new Promise(resolve => {
           articleSelectAbstract({
             category: item.category,
@@ -163,7 +164,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 .chart_conten_solve_build_problem {
   height: calc(100% - 72px);
   padding: 50px 0 0 0;
@@ -222,9 +223,8 @@ export default {
         height: 50px;
         object-fit: cover;
       }
-      .artic_img_loading{
+      .artic_img_loading {
         width: 50px;
-
       }
     }
     display: flex;
