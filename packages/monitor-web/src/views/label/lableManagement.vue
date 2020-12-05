@@ -580,7 +580,7 @@ export default {
       document.getElementById("editinfoName").value = obj.name;
       document.getElementById("editinfoRemark").value = obj.brief;
       if (obj.tags) {
-        document.getElementById("edittag").value = obj.tags;
+        document.getElementById("edittag").value = obj.tags[0].id;
       }
       let _this = this;
       if (!this.editInfowindow.isOpen()) {
