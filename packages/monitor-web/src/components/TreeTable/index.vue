@@ -97,7 +97,6 @@ export default {
     },
     // 切换下级是否展开
     toggleExpanded: function(trIndex) {
-      debugger
       const record = this.formatData[trIndex]
       record._expanded = !record._expanded
     },

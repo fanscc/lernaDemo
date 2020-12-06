@@ -84,14 +84,14 @@ export default {
   mounted() {
     const editor = new E(this.$refs.editor);
     this.editId = this.$route.query.id;
-    editor.customConfig.uploadImgShowBase64 = true; // 使用 base64 保存图片
+    editor.config.uploadImgShowBase64 = true; // 使用 base64 保存图片
     // 不可修改
-    editor.customConfig.uploadImgHeaders = this.headers;
+    editor.config.uploadImgHeaders = this.headers;
     // 自定义文件名，不可修改，修改后会上传失败
     // editor.customConfig.uploadFileName = 'file'
     // 上传到哪儿，按需选择
     // editor.customConfig.uploadImgServer = this.imagesUploadApi // 上传图片到服务器
-    editor.customConfig.onchange = html => {
+    editor.config.onchange = html => {
       this.details = html;
     };
     editor.create();

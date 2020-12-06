@@ -24,8 +24,8 @@
         <div
           class="quertion_item"
           @click="goArtic(item.id)"
-          v-for="item in table.data"
-          :key="item.id"
+          v-for="(item, $index) in table.data"
+          :key="`${index}_${$index}`"
           :class="[item.state === 1 ? 'newQustion' : '']"
         >
           <div class="artic_item_item">
