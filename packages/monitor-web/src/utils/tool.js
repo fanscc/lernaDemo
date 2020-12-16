@@ -253,7 +253,7 @@ const valueUnit = function (items) {
     19: `${val}`,
     20: `${val}`,
     21: `${val}`,
-    22: `${val}`,
+    22: `${val.toFixed(4)}`,
     23: `${val}`,
     24: `${val}`,
     25: `${val}`,
