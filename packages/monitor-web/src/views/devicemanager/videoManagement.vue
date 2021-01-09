@@ -42,6 +42,11 @@
         height="100%"
       >
         <el-table-column type="index" width="50" />
+        <el-table-column prop="groupId" label="分组">
+          <template slot-scope="scope">
+            {{ swicthGroupName(scope.row.groupId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="channelName" label="摄像头名称">
         </el-table-column>
         <el-table-column prop="cameraAlias" label="摄像头描述">
@@ -291,6 +296,9 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    swicthGroupName(val) {
+      return this.grouping.filter(i => i.value === val)[0].label;
     },
     resetValue() {
       this.selectValue = "";
