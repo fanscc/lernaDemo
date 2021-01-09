@@ -212,3 +212,52 @@ export function getSersorhistory(gateId, nodeId, parmas) {
     params: parmas
   });
 }
+
+/**
+ * 摄像头管理
+ */
+// 获取所有摄像头
+export function getYscamera() {
+  return request({
+    url: `/newman/yscamera?page=0&pageSize=50`,
+    method: "get"
+  });
+}
+
+// 根据分组获取摄像头
+export function getbyGroupId(groupId) {
+  let url =
+    groupId || groupId === 0
+      ? `/newman/camera?groupId=${groupId}`
+      : `/newman/camera`;
+  return request({
+    url: url,
+    method: "get"
+  });
+}
+
+// 新增摄像头
+export function postYscamera(data) {
+  return request({
+    url: `/newman/camera`,
+    method: "post",
+    data: data
+  });
+}
+
+// 编辑机摄像头
+export function editYscamera(data, id) {
+  return request({
+    url: `/newman/camera/${id}`,
+    method: "put",
+    data: data
+  });
+}
+
+// 删除摄像头
+export function deleteYscamera(id) {
+  return request({
+    url: `/newman/camera/${id}`,
+    method: "delete"
+  });
+}
