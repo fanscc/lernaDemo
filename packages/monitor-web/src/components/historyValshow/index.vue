@@ -50,6 +50,7 @@
 <script>
 import "v-charts/lib/style.css";
 import { getSersorhistory } from "@/api/equipment";
+import { getToken } from "@/utils/auth";
 import { Loading } from "element-ui";
 export default {
   data() {
@@ -246,7 +247,11 @@ export default {
       }, 3000);
       const time = new Date(this.ValidateForm.toTime).getTime();
       const toTime = new Date(this.ValidateForm.fromTime).getTime();
-      let url = `/newman/gate/${this.gateId}/node/${this.nodeId}/history_excel?sensor=${this.sensor}&fromTime=${time}&toTime=${toTime}`;
+      let url = `/newman/gate/${this.gateId}/node/${
+        this.nodeId
+      }/history_excel?sensor=${
+        this.sensor
+      }&fromTime=${time}&toTime=${toTime}&token=${getToken()}`;
       window.location.href = url;
     }
   }
