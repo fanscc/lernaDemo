@@ -31,6 +31,9 @@
           @change="timeChage"
         />
       </el-form-item>
+      <el-button type="warning" :loading="loading" @click="download"
+        >下载数据</el-button
+      >
     </el-form>
     <ve-line
       :data="chartData"
@@ -120,6 +123,7 @@ export default {
       }
     };
     return {
+      loading: false,
       ValidateForm: {
         toTime: new Date(new Date().getTime() - 3600000 * 12),
         fromTime: new Date()
@@ -148,10 +152,10 @@ export default {
       this.chartData.columns[1] = this.activeSensorChrild;
       this.chartData.rows = [];
       const arr = [];
-      let oldTime = 0
+      let oldTime = 0;
       val.map(o => {
         if (o.sTime - oldTime > 1000) {
-          oldTime = o.sTime
+          oldTime = o.sTime;
           const obj = {
             日期: this.$utils.formatDate(o.sTime, "MM-dd-hh:mm:ss")
           };
@@ -234,6 +238,16 @@ export default {
         33: "网关电池"
       };
       return objs[num];
+    },
+    download() {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+      const time = new Date(this.ValidateForm.toTime).getTime();
+      const toTime = new Date(this.ValidateForm.fromTime).getTime();
+      let url = `/newman/gate/${this.gateId}/node/${this.nodeId}/history_excel?sensor=${this.sensor}&fromTime=${time}&toTime=${toTime}`;
+      window.location.href = url;
     }
   }
 };
