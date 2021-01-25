@@ -87,7 +87,7 @@ export function getReply(id) {
 }
 
 /// 回复问题的信息接口
-export function getReplyMore(id,maxId) {
+export function getReplyMore(id, maxId) {
   return request({
     url: `/expert/reply?topicId=${id}&maxId=${maxId}`,
     method: "get",
