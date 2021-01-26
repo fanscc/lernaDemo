@@ -251,7 +251,7 @@ export default {
         this.nodeId
       }/history_excel?sensor=${
         this.sensor
-      }&fromTime=${time}&toTime=${toTime}&token=${getToken()}`;
+      }&fromTime=${time}&toTime=${toTime}&token=${"Bearer " + getToken()}`;
       window.location.href = url;
     }
   }
