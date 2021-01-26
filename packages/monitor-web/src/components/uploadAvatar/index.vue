@@ -54,6 +54,7 @@
         size="mini"
         @click="summitAvata()"
         :disabled="!cropper.img"
+        :loading="loading"
         >上传</el-button
       >
     </div>
@@ -84,7 +85,8 @@ export default {
       isSuccess: false,
       previews: {},
       formData: {},
-      action_url: ""
+      action_url: "",
+      loading: false
       // step: 2
     };
   },
@@ -179,15 +181,19 @@ export default {
       this.beforeAvatarUpload(data).then(formData => {
         uploadWangEditor(this.action_url, formData)
           .then(() => {
+            this.$message.success("图片上传成功");
+            this.loading = false;
             this.$emit("input", `${this.formData.key}`);
           })
           .catch(() => {
+            this.loading = false;
             this.$message.error("图片上传失败,请稍后再试");
           });
       });
     },
     //点击确定上传裁剪完的头像图片（blob类型）
     summitAvata() {
+      this.loading = true;
       this.$refs.cropper.getCropBlob(data => {
         this.uploadAvatar(data);
       });
