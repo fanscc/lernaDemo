@@ -72,6 +72,7 @@
             placeholder="请输入最大值"
             style="width: 178px;"
           />
+          <font>{{ labelunit }}</font>
         </el-form-item>
         <el-form-item
           v-if="
@@ -86,6 +87,7 @@
             placeholder="请输入最小值"
             style="width: 178px;"
           />
+          <font>{{ labelunit }}</font>
         </el-form-item>
         <el-form-item
           v-if="
@@ -195,6 +197,13 @@ export default {
     labelName() {
       const name = this.$utils.fliterSensorName(this.ValidateForm.sensorId);
       return name;
+    },
+    labelunit() {
+      const objs = this.$utils.fliterSensorName(
+        this.ValidateForm.sensorId,
+        true
+      );
+      return objs.unit;
     }
   },
   watch: {
