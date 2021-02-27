@@ -43,9 +43,22 @@
         <el-table-column prop="gateId" label="网关id" />
         <el-table-column prop="nodeId" label="节点id" />
         <el-table-column prop="sensorId" label="传感器id" />
-        <el-table-column prop="maxTh" label="最大值" />
-        <el-table-column prop="eqTh" label="告警值" />
-        <el-table-column prop="minTh" label="最小值" />
+        <el-table-column prop="maxTh" label="最大值">
+          <template slot-scope="scope">
+            {{ scope.row.maxTh }}{{ labelunit(scope.row.sensorId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="eqTh" label="告警值">
+          <template slot-scope="scope">
+            {{ scope.row.eqTh
+            }}{{ scope.row.eqTh && labelunit(scope.row.sensorId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="minTh" label="最小值">
+          <template slot-scope="scope">
+            {{ scope.row.minTh }}{{ labelunit(scope.row.sensorId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="minTh" label="是否启用">
           <template slot-scope="scope">
             <span>{{ scope.row.deleted === 0 ? "启用" : "停用" }}</span>
@@ -158,6 +171,10 @@ export default {
             });
         })
         .catch(() => {});
+    },
+    labelunit(sensorId) {
+      const objs = this.$utils.fliterSensorName(sensorId, true);
+      return objs.unit;
     }
   }
 };

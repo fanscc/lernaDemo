@@ -1,7 +1,7 @@
 import store from "@/store";
 import router from "@/router/routers";
 // 封装深度克隆
-const deepClone = function (origin, target) {
+const deepClone = function(origin, target) {
   // eslint-disable-next-line
   var target = target || {}, //设置target的默认值，不传值默认为空对象
     toStr = Object.prototype.toString, // 原型链方法：判断数值类型
@@ -26,7 +26,7 @@ function padLeftZero(str) {
   return ("00" + str).substr(str.length);
 }
 
-const formatDate = function (time, fmt) {
+const formatDate = function(time, fmt) {
   const date = new Date(time);
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, date.getFullYear());
@@ -50,7 +50,7 @@ const formatDate = function (time, fmt) {
   return fmt;
 };
 
-const fliterSensorName = function (num, objs) {
+const fliterSensorName = function(num, objs) {
   const objNum = parseInt(num / 1000) || 1;
   const addName = num % 1000;
   const sensor = {
@@ -137,7 +137,7 @@ const fliterSensorName = function (num, objs) {
     17: {
       name: "电流",
       iconName: "iconeryanghuatan",
-      unit: ""
+      unit: "mA"
     },
     18: {
       name: "卡号",
@@ -152,27 +152,27 @@ const fliterSensorName = function (num, objs) {
     20: {
       name: "光合有效值",
       iconName: "icongps",
-      unit: ""
+      unit: "fPAR"
     },
     21: {
       name: "降雨量",
       iconName: "icondianqixingye",
-      unit: ""
+      unit: "mm/min"
     },
     22: {
       name: "扭矩",
       iconName: "iconniuli",
-      unit: ""
+      unit: "N·m"
     },
     23: {
       name: "油压",
       iconName: "iconjiyouyali",
-      unit: ""
+      unit: "Kpa"
     },
     24: {
       name: "油量",
       iconName: "iconyouliang",
-      unit: ""
+      unit: "L"
     },
     25: {
       name: "水温",
@@ -182,17 +182,17 @@ const fliterSensorName = function (num, objs) {
     26: {
       name: "发动机转速",
       iconName: "iconsuduspeed8",
-      unit: ""
+      unit: "r/min"
     },
     27: {
       name: "角度",
       iconName: "iconjiaodu",
-      unit: ""
+      unit: "度"
     },
     28: {
       name: "角速度",
       iconName: "iconzhuansubiao",
-      unit: ""
+      unit: "rad/s"
     },
     29: {
       name: "PM1.0",
@@ -227,7 +227,7 @@ const fliterSensorName = function (num, objs) {
   }
 };
 
-const valueUnit = function (items) {
+const valueUnit = function(items) {
   const num = parseInt(items.sensor / 1000);
   const val = items.value1 - 0;
   const val2 = items.value2 - 0;
@@ -269,7 +269,7 @@ const valueUnit = function (items) {
   return objs[num];
 };
 
-const closeTag = function (view, toPath) {
+const closeTag = function(view, toPath) {
   store.dispatch("delView", view).then(() => {
     if (toPath) {
       router.push(toPath.path);

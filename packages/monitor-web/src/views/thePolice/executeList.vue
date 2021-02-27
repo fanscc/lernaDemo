@@ -26,6 +26,12 @@
         @click="addforecast"
         >新增</el-button
       >
+      <!-- <el-button
+        v-permission="['ADMIN', 'EXECUTE_ALL', 'EXECUTE_ADD']"
+        type="primary"
+        @click="addLanmu"
+        >在建项目信息</el-button
+      > -->
     </div>
     <div ref="topictable" class="chart_conten_table">
       <el-table
@@ -100,14 +106,19 @@
         </el-table-column>
       </el-table>
     </div>
+    <dialogConten ref="dialogContenDom"></dialogConten>
   </div>
 </template>
 
 <script>
 import { execute } from "@/api/thePolice";
 import { Loading } from "element-ui";
+import dialogConten from "./dialogConten.vue";
 export default {
   name: "ForecastList",
+  components: {
+    dialogConten
+  },
   data: function() {
     return {
       alias: "", // 查询条件别名
@@ -200,6 +211,9 @@ export default {
             });
         })
         .catch(() => {});
+    },
+    addLanmu() {
+      this.$refs.dialogContenDom.open();
     }
   }
 };

@@ -13,23 +13,18 @@
       label-width="150px"
       class="demo-ruleForm"
     >
-      <el-form-item label="起始时间:" prop="toTime">
+      <el-form-item label="时间选择:">
         <el-date-picker
-          v-model="ValidateForm.toTime"
-          :default-value="new Date()"
-          type="datetime"
-          placeholder="选择日期时间"
+          v-model="ValidateForm.timeArr"
+          type="datetimerange"
+          :picker-options="pickerOptions"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          align="right"
           @change="timeChage"
-        />
-      </el-form-item>
-      <el-form-item label="结束时间:" prop="fromTime">
-        <el-date-picker
-          v-model="ValidateForm.fromTime"
-          :default-value="new Date()"
-          type="datetime"
-          placeholder="选择日期时间"
-          @change="timeChage"
-        />
+        >
+        </el-date-picker>
       </el-form-item>
       <el-button type="warning" :loading="loading" @click="download"
         >下载数据</el-button
@@ -101,41 +96,56 @@ export default {
         triggerOn: "mousemove"
       }
     };
-    const validatetoTime = (rule, value, callback) => {
-      if (
-        new Date(value).getTime() >
-          new Date(this.ValidateForm.fromTime).getTime() &&
-        this.ValidateForm.fromTime
-      ) {
-        callback(new Error("起始时间不能大于结束时间"));
-      } else {
-        callback();
-      }
-    };
-    const validatefromTime = (rule, value, callback) => {
-      if (
-        new Date(value).getTime() >
-          new Date(this.ValidateForm.fromTime).getTime() &&
-        this.ValidateForm.toTime
-      ) {
-        callback(new Error("结束时间不能小于起始时间"));
-      } else {
-        callback();
-      }
-    };
     return {
       loading: false,
       ValidateForm: {
-        toTime: new Date(new Date().getTime() - 3600000 * 12),
-        fromTime: new Date()
+        timeArr: [new Date(new Date().getTime() - 3600000 * 12), new Date()]
       },
-      rules: {
-        toTime: [
-          { required: true, message: "请输入起始时间", trigger: "change" },
-          { validator: validatetoTime, trigger: "change" }
-        ],
-        fromTime: [{ validator: validatefromTime, trigger: "change" }]
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "今天",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              let y = new Date().getFullYear();
+              let m = new Date().getMonth() + 1;
+              let d = new Date().getDate();
+              let startToime = new Date(`${y}-${m}-${d} 00:00:00`).getTime();
+              start.setTime(startToime);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
+          }
+        ]
       },
+      rules: {},
       showHistroy: false,
       initTime: new Date(),
       sensorsArr: [], // 历史数据
@@ -181,8 +191,14 @@ export default {
     timeChage() {
       this.$refs.checkValidateForm.validate(valid => {
         if (valid) {
-          const time = new Date(this.ValidateForm.toTime).getTime();
-          const toTime = new Date(this.ValidateForm.fromTime).getTime();
+          if (
+            !this.ValidateForm.timeArr ||
+            this.ValidateForm.timeArr.length === 0
+          ) {
+            return this.$message.warning("请先选择时间");
+          }
+          const time = new Date(this.ValidateForm.timeArr[0]).getTime();
+          const toTime = new Date(this.ValidateForm.timeArr[1]).getTime();
           const params = {
             sensor: this.sensor,
             fromTime: time,
@@ -241,17 +257,24 @@ export default {
       return objs[num];
     },
     download() {
+      if (
+        !this.ValidateForm.timeArr ||
+        this.ValidateForm.timeArr.length === 0
+      ) {
+        return this.$message.warning("请先选择时间");
+      }
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
       }, 3000);
-      const time = new Date(this.ValidateForm.toTime).getTime();
-      const toTime = new Date(this.ValidateForm.fromTime).getTime();
+      const time = new Date(this.ValidateForm.timeArr[0]).getTime();
+      const toTime = new Date(this.ValidateForm.timeArr[1]).getTime();
       let url = `/newman/gate/${this.gateId}/node/${
         this.nodeId
       }/history_excel?sensor=${
         this.sensor
       }&fromTime=${time}&toTime=${toTime}&token=${"Bearer " + getToken()}`;
+      this.$message.success("下载中,请稍等...");
       window.location.href = url;
     }
   }
