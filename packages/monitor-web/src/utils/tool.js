@@ -309,10 +309,166 @@ const closeTag = function(view, toPath) {
   });
 };
 
+const SensorTypes = [
+  {
+    value: "1000",
+    label: "空气温度"
+  },
+  {
+    value: "2000",
+    label: "空气湿度"
+  },
+  {
+    value: "3000",
+    label: "气压"
+  },
+  {
+    value: "4000",
+    label: "土壤温度"
+  },
+  {
+    value: "5000",
+    label: "土壤湿度"
+  },
+  {
+    value: "6000",
+    label: "光照"
+  },
+  {
+    value: "7000",
+    label: "电压"
+  },
+  {
+    value: "8000",
+    label: "空调"
+  },
+  {
+    value: "9000",
+    label: "电磁阀"
+  },
+  {
+    value: "10000",
+    label: "电池电压"
+  },
+  {
+    value: "11000",
+    label: "太阳能板电压"
+  },
+  {
+    value: "12000",
+    label: "风速"
+  },
+  {
+    value: "13000",
+    label: "风向"
+  },
+  {
+    value: "14000",
+    label: "二氧化碳"
+  },
+  {
+    value: "15000",
+    label: "GPS"
+  },
+  {
+    value: "16000",
+    label: "继电器"
+  },
+  {
+    value: "17000",
+    label: "电流"
+  },
+  {
+    value: "18000",
+    label: "卡号"
+  },
+  {
+    value: "19000",
+    label: "总电量"
+  },
+  {
+    value: "20000",
+    label: "光合有效值"
+  },
+  {
+    value: "21000",
+    label: "降雨量"
+  },
+  {
+    value: "22000",
+    label: "扭矩"
+  },
+  {
+    value: "23000",
+    label: "油压"
+  },
+  {
+    value: "24000",
+    label: "油量"
+  },
+  {
+    value: "25000",
+    label: "水温"
+  },
+  {
+    value: "26000",
+    label: "发动机转速"
+  },
+  {
+    value: "27000",
+    label: "角度"
+  },
+  {
+    value: "28000",
+    label: "角速度"
+  },
+  {
+    value: "29000",
+    label: "PM1.0"
+  },
+  {
+    value: "30000",
+    label: "PM2.5"
+  },
+  {
+    value: "31000",
+    label: "PM10"
+  },
+  {
+    value: "32000",
+    label: "噪声"
+  },
+  {
+    value: "33000",
+    label: "网关电池信息"
+  },
+  {
+    value: "34000",
+    label: "土壤电导率"
+  },
+  {
+    value: "35000",
+    label: "土壤PH值"
+  },
+  {
+    value: "36000",
+    label: "土壤氮含量"
+  },
+  {
+    value: "37000",
+    label: "土壤磷含量"
+  },
+  {
+    value: "38000",
+    label: "土壤钾含量"
+  }
+]; // 传感器类型
+
 export const utils = {
   deepClone,
   formatDate,
   fliterSensorName,
   valueUnit,
-  closeTag
+  closeTag,
+  SensorTypes
 };
