@@ -218,6 +218,31 @@ const fliterSensorName = function(num, objs) {
       name: "网关电池信息",
       iconName: "icondianqixingye",
       unit: "%"
+    },
+    34: {
+      name: "土壤电导率",
+      iconName: "iconkongqishidu",
+      unit: "us/cm"
+    },
+    35: {
+      name: "土壤PH值",
+      iconName: "iconkongqishidu",
+      unit: "PH"
+    },
+    36: {
+      name: "土壤氮含量",
+      iconName: "iconkongqishidu",
+      unit: "mg/kg"
+    },
+    37: {
+      name: "土壤磷含量",
+      iconName: "iconkongqishidu",
+      unit: "mg/kg"
+    },
+    38: {
+      name: "土壤钾含量",
+      iconName: "iconkongqishidu",
+      unit: "mg/kg"
     }
   };
   if (!objs) {
@@ -264,7 +289,12 @@ const valueUnit = function(items) {
     30: `${val}ug/m³`,
     31: `${val}ug/m³`,
     32: `${val}db`,
-    33: `${val}%`
+    33: `${val}%`,
+    34: `${val}us/cm`,
+    35: `${val}PH`,
+    36: `${val}mg/kg`,
+    37: `${val}mg/kg`,
+    38: `${val}mg/kg`
   };
   return objs[num];
 };

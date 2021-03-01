@@ -183,7 +183,10 @@ export default {
       this.nodeId = obj ? obj.nodeId : 1;
       this.sensor = obj ? obj.sensor : 1001;
       this.gateId = obj ? obj.gateId : 0;
-      this.activeSensorChrild = this.activeSensorName();
+      this.activeSensorChrild = this.$utils.fliterSensorName(
+        this.sensor,
+        true
+      ).name;
       this.$nextTick(() => {
         this.timeChage();
       });
@@ -217,44 +220,6 @@ export default {
           });
         }
       });
-    },
-    activeSensorName() {
-      if (this.sensor === "") return "";
-      const num = parseInt(this.sensor / 1000);
-      const objs = {
-        1: "空气温度",
-        2: "空气湿度",
-        3: "气压",
-        4: "土壤温度",
-        5: "土壤湿度",
-        6: "光照",
-        7: "电压",
-        10: "电池电压",
-        11: "太阳能板电压",
-        12: "风速",
-        13: "风向",
-        14: "二氧化碳",
-        15: "GPS",
-        16: "继电器",
-        17: "电流",
-        18: "卡号",
-        19: "总电量",
-        20: "光合有效值",
-        21: "降雨量",
-        22: "扭矩",
-        23: "油压",
-        24: "油量",
-        25: "水温",
-        26: "发动机转速",
-        27: "角度",
-        28: "角速度",
-        29: "PM1.0",
-        30: "PM2.5",
-        31: "PM10",
-        32: "噪声",
-        33: "网关电池"
-      };
-      return objs[num];
     },
     download() {
       if (
