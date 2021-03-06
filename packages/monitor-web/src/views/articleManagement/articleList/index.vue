@@ -66,7 +66,7 @@
         <div class="artic_item_item">
           <div>{{ item.title }}</div>
           <p>
-            <span>发表日期:</span>
+            <span>发布日期:</span>
             <span>{{ item.publishTs }}</span>
           </p>
         </div>

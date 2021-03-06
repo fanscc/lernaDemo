@@ -14,7 +14,7 @@
       <el-form-item label="作者姓名:" prop="author">
         <el-input v-model="form.author" style="width: 300px"></el-input>
       </el-form-item>
-      <el-form-item label="发表时间:" prop="publishTs">
+      <el-form-item label="发布时间:" prop="publishTs">
         <el-date-picker
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetime"
