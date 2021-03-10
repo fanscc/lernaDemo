@@ -143,7 +143,6 @@
           <el-form-item label="纬度" prop="addLat">
             <el-input
               v-model="addruleForm.addLat"
-              readonly="readonly"
               placeholder="请选择地址"
               class="fe-input-content"
             />
@@ -152,7 +151,6 @@
             <el-input
               v-model="addruleForm.addLon"
               placeholder="请选择地址"
-              readonly="readonly"
               class="fe-input-content"
             />
           </el-form-item>

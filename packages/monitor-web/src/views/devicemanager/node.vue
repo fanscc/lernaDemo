@@ -161,18 +161,10 @@
             >
           </div>
           <el-form-item label="纬度" prop="addLat">
-            <el-input
-              v-model="addruleForm.addLat"
-              readonly="readonly"
-              class="fe-input-content"
-            />
+            <el-input v-model="addruleForm.addLat" class="fe-input-content" />
           </el-form-item>
           <el-form-item label="经度" prop="addLon">
-            <el-input
-              v-model="addruleForm.addLon"
-              readonly="readonly"
-              class="fe-input-content"
-            />
+            <el-input v-model="addruleForm.addLon" class="fe-input-content" />
           </el-form-item>
           <el-form-item label="节点地址" prop="addAddress">
             <el-input
