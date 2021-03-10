@@ -70,7 +70,7 @@
       <div class="flex_mobil">
         <div class="android">
           <p class="qrcode">
-            <img src="../../assets/logo/iosqr.png" alt="" srcset="" />
+            <img src="../../assets/logo/android.png" alt="" srcset="" />
           </p>
           <p class="icon_tip"><svg-icon icon-class="anzou" fill="#fff" /></p>
         </div>
