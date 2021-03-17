@@ -206,7 +206,7 @@
       </span>
     </el-dialog>
 
-    <!-- 编辑用户 -->
+    <!-- 编辑网关 -->
     <el-dialog
       :visible.sync="editVisible"
       title="修改网关"
@@ -224,10 +224,38 @@
           <el-form-item label="网关别名" prop="editOtherName">
             <el-input v-model="editruleForm.editOtherName" />
           </el-form-item>
+          <div class="address_xz">
+            <el-button type="primary" size="mini" @click="getCurrentAddress"
+              >获取当前地址</el-button
+            >
+            <el-button
+              type="primary"
+              size="mini"
+              @click="
+                adressVisible = true;
+                editVisible = false;
+              "
+              >去选择地址</el-button
+            >
+          </div>
+          <el-form-item label="纬度" prop="addLat">
+            <el-input
+              v-model="editruleForm.addLat"
+              placeholder="请选择地址"
+              class="fe-input-content"
+            />
+          </el-form-item>
+          <el-form-item label="经度" prop="addLon">
+            <el-input
+              v-model="editruleForm.addLon"
+              placeholder="请选择地址"
+              class="fe-input-content"
+            />
+          </el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button @click="editVisible = editing = false">取 消</el-button>
         <el-button type="primary" @click="editsaveGroup">确 定</el-button>
       </span>
     </el-dialog>
@@ -290,6 +318,7 @@ export default {
       tableData: [],
       centerDialogVisible: false,
       editId: "",
+      editing: false,
       editVisible: false,
       adressVisible: false,
       addruleForm: {
@@ -305,7 +334,9 @@ export default {
       },
       picName: "", // 上传图片的地址
       editruleForm: {
-        editOtherName: "" // 编辑的别名
+        editOtherName: "", // 编辑的别名
+        addLat: "", // 编辑的纬度
+        addLon: "" // 编辑的经度
       },
       rules: {
         addselectValue: [
@@ -406,6 +437,7 @@ export default {
     editAlias(item) {
       this.editId = item.gateId;
       this.editVisible = true;
+      this.editing = true;
     },
     editsaveGroup() {
       this.$refs["editruleForm"].validate(valid => {
@@ -430,6 +462,7 @@ export default {
               this.init();
             })
             .finally(() => {
+              this.editing = false
               loadingInstance.close();
             });
         }
@@ -508,14 +541,25 @@ export default {
     async getCurrentAddress() {
       // 获取当前位子的坐标
       const addressObj = await this.$refs.getAddress.getAdress();
-      this.addruleForm.addLon = addressObj.lng;
-      this.addruleForm.addLat = addressObj.lat;
+      if(!this.editing){
+        this.addruleForm.addLon = addressObj.lng;
+        this.addruleForm.addLat = addressObj.lat;
+      }else{
+        this.editruleForm.addLat = addressObj.lat;
+        this.editruleForm.addLon = addressObj.lng;
+      }
     },
     emitAdress(addressObj) {
-      this.addruleForm.addLon = addressObj.lng;
-      this.addruleForm.addLat = addressObj.lat;
+      if(!this.editing){
+        this.addruleForm.addLon = addressObj.lng;
+        this.addruleForm.addLat = addressObj.lat;
+        this.centerDialogVisible = true;
+      }else{
+        this.editruleForm.addLon = addressObj.lng;
+        this.editruleForm.addLat = addressObj.lat;
+        this.editVisible = true;
+      }
       this.adressVisible = false;
-      this.centerDialogVisible = true;
     }
   }
 };

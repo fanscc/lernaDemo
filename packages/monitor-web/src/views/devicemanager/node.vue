@@ -262,10 +262,73 @@
           <el-form-item label="别名" prop="editOtherName">
             <el-input v-model="editruleForm.editOtherName"></el-input>
           </el-form-item>
+          <div class="address_xz">
+            <el-button type="primary" size="mini" @click="getCurrentAddress">获取当前地址</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="
+                adressVisible = true;
+                centerDialogVisible = false;
+              "
+              >去选择地址</el-button
+            >
+          </div>
+          <el-form-item label="纬度" prop="addLat">
+            <el-input v-model="editruleForm.addLat" class="fe-input-content" />
+          </el-form-item>
+          <el-form-item label="经度" prop="addLon">
+            <el-input v-model="editruleForm.addLon" class="fe-input-content" />
+          </el-form-item>
+          <el-form-item label="传感器类型">
+            <div class="SensorTypeDom">
+              <div
+                v-for="(item, index) in SensorEditType"
+                :key="index"
+                class="margin_bt"
+              >
+                <el-select
+                  v-model="item.sensor"
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in SensorTypes"
+                    filterable
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <label v-if="item.sensor != 9000 && item.sensor != 16000"
+                  >采集周期</label
+                >
+                <span v-if="item.sensor != 9000 && item.sensor != 16000">
+                  <el-input
+                    v-model="item.interval"
+                    style="width: 200px;"
+                    class="fe-input-content"
+                    placeholder="只能输入正整数单位(s)"
+                    @keyup.native="checkInterVal(item)"
+                  />
+                </span>
+                <el-button
+                  v-if="index > 0"
+                  type="danger"
+                  size="mini"
+                  @click="removeSensorType(index)"
+                  >删除传感器</el-button
+                >
+              </div>
+              <el-button size="mini" type="primary" @click="addSensorType"
+                >增加传感器</el-button
+              >
+            </div>
+          </el-form-item>          
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button @click="editVisible = editing = false">取 消</el-button>
         <el-button type="primary" @click="saveEdit">确 定</el-button>
       </span>
     </el-dialog>
@@ -338,6 +401,7 @@ export default {
       gateing: [], // 网关
       centerDialogVisible: false,
       adressVisible: false, // 选择地址
+      editing: false,
       editVisible: false,
       sceneVisible: false,
       styleObject: {
@@ -357,7 +421,9 @@ export default {
       addway_index: "",
       gateImg: "", // 网关设置的图片
       editruleForm: {
-        editOtherName: "" // 编辑别名
+        editOtherName: "", // 编辑别名
+        addLat: "",
+        addLon: "",
       },
       rules: {
         addGroup: [
@@ -390,6 +456,7 @@ export default {
         ]
       },
       SensorType: [{ sensor: "", interval: "" }], // 选中的传感器
+      SensorEditType: [{ sensor: "", interval: "" }], // 选中的传感器
       SensorTypes: this.$utils.SensorTypes,
       bodyStyle: {
         "font-size": "12px",
@@ -501,20 +568,32 @@ export default {
         });
     },
     editNode(item) {
+      this.editing = true
       this.editVisible = true;
       this.id = item.nodeId;
     },
     async getCurrentAddress() {
       // 获取当前位子的坐标
       const addressObj = await this.$refs.getAddress.getAdress();
-      this.addruleForm.addLon = addressObj.lng;
-      this.addruleForm.addLat = addressObj.lat;
+      if(!this.editing){
+        this.addruleForm.addLon = addressObj.lng;
+        this.addruleForm.addLat = addressObj.lat;
+      }else{
+        this.editruleForm.addLon = addressObj.lng;
+        this.editruleForm.addLat = addressObj.lat;
+      }
     },
     emitAdress(addressObj) {
-      this.addruleForm.addLon = addressObj.lng;
-      this.addruleForm.addLat = addressObj.lat;
+      if(!this.editing){
+        this.addruleForm.addLon = addressObj.lng;
+        this.addruleForm.addLat = addressObj.lat;
+        this.centerDialogVisible = true;
+      }else{
+        this.editruleForm.addLon = addressObj.lng;
+        this.editruleForm.addLat = addressObj.lat;
+        this.editVisible = true;
+      }
       this.adressVisible = false;
-      this.centerDialogVisible = true;
     },
     checkInterVal(item) {
       const rel = /[1-9][0-9]*$/g;
@@ -615,8 +694,34 @@ export default {
     saveEdit() {
       this.$refs["editruleForm"].validate(valid => {
         if (valid) {
+          const SensorCycle = [];
+          const NodeBean = {
+            sensors: []
+          }
+           /**
+           * 传感器类型处理相同的传感器加个序号
+           */
+          this.SensorEditType.map((o, index) => {
+            if (!o.sensor) return;
+            let num = 1;
+            for (var i = index - 1; i >= 0; i--) {
+              if (o.sensor === this.SensorEditType[i].sensor) {
+                num++;
+              }
+            }
+            SensorCycle.push({});
+            SensorCycle[index].sensor = o.sensor - 0 + num;
+            SensorCycle[index].interval = o.interval;
+            NodeBean.sensors.push(o.sensor - 0 + num);
+          });
+          NodeBean.sensors = NodeBean.sensors.join(",");
+          NodeBean.cycles = SensorCycle;
           const params = {
-            nodeName: this.editruleForm.editOtherName
+            nodeName: this.editruleForm.editOtherName,
+            addLat: this.editruleForm.addLat,
+            addLon: this.editruleForm.addLon,
+            sensors: NodeBean.sensors,
+            cycles: SensorCycle
           };
           this.loading = true;
           editNode(params, this.id)
@@ -626,6 +731,7 @@ export default {
                 type: "success",
                 duration: 2500
               });
+              this.editing = false;
               this.editVisible = false;
               this.init();
             })
@@ -636,10 +742,18 @@ export default {
       });
     },
     addSensorType() {
-      this.SensorType.push({ sensor: "", interval: "" });
+      if(!this.editing){
+        this.SensorType.push({ sensor: "", interval: "" });
+      }else{
+        this.SensorEditType.push({ sensor: "", interval: "" });
+      }  
     },
     removeSensorType(index) {
-      this.SensorType.splice(index, 1);
+      if(!this.editing){
+        this.SensorType.splice(index, 1);
+      }else{
+        this.SensorEditType.splice(index, 1);
+      }  
     },
     styleObject_method(obj) {
       this.sceneVisible = false;
@@ -709,7 +823,7 @@ export default {
 }
 .edtirdialog {
   /deep/ .el-dialog {
-    width: 450px;
+    width: 800px;
   }
 }
 .address_xz {
