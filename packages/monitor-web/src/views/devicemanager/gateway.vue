@@ -443,7 +443,9 @@ export default {
       this.$refs["editruleForm"].validate(valid => {
         if (valid) {
           const params = {
-            gateAlias: this.editruleForm.editOtherName
+            gateAlias: this.editruleForm.editOtherName,
+            lat: this.editruleForm.addLat,
+            lon: this.editruleForm.addLon
           };
           const loadingInstance = Loading.service({
             fullscreen: true,

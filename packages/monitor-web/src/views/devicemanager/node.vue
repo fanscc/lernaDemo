@@ -718,8 +718,8 @@ export default {
           NodeBean.cycles = SensorCycle;
           const params = {
             nodeName: this.editruleForm.editOtherName,
-            addLat: this.editruleForm.addLat,
-            addLon: this.editruleForm.addLon,
+            lat: this.editruleForm.addLat,
+            lon: this.editruleForm.addLon,
             sensors: NodeBean.sensors,
             cycles: SensorCycle
           };
