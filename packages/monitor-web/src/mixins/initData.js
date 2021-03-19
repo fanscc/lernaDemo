@@ -23,19 +23,16 @@ export default {
         this.loading = true;
         initData(this.url, this.params)
           .then(res => {
-            if(res.totalElements)
-              this.total = res.totalElements;
+            if (res.totalElements) this.total = res.totalElements;
             this.data = res.content;
-            if (res.content===undefined){
-              if(res.result.list===undefined){
+            if (res.content === undefined) {
+              if (res.result.list === undefined) {
                 this.data = res.result;
-              }
-              else if(res.result.list.length > -1){
+              } else if (res.result.list.length > -1) {
                 this.data = res.result.list;
-                this.total = res.result.total
-                console.log(this.data)
+                this.total = res.result.total;
+                console.log(this.data);
               }
-
             }
             setTimeout(() => {
               this.loading = false;

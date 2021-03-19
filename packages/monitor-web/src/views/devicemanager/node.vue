@@ -423,7 +423,7 @@ export default {
       editruleForm: {
         editOtherName: "", // 编辑别名
         addLat: "",
-        addLon: "",
+        addLon: ""
       },
       rules: {
         addGroup: [
@@ -568,27 +568,37 @@ export default {
         });
     },
     editNode(item) {
-      this.editing = true
+      this.editing = true;
       this.editVisible = true;
       this.id = item.nodeId;
+      // 回显
+      this.editruleForm.editOtherName = item.nodeName;
+      this.editruleForm.addLat = item.lat;
+      this.editruleForm.addLon = item.lon;
+      this.SensorEditType = item.cycles.map(ite => {
+        return {
+          sensor: String(parseInt(ite.sensor / 100) * 100),
+          interval: ite.sensor
+        };
+      });
     },
     async getCurrentAddress() {
       // 获取当前位子的坐标
       const addressObj = await this.$refs.getAddress.getAdress();
-      if(!this.editing){
+      if (!this.editing) {
         this.addruleForm.addLon = addressObj.lng;
         this.addruleForm.addLat = addressObj.lat;
-      }else{
+      } else {
         this.editruleForm.addLon = addressObj.lng;
         this.editruleForm.addLat = addressObj.lat;
       }
     },
     emitAdress(addressObj) {
-      if(!this.editing){
+      if (!this.editing) {
         this.addruleForm.addLon = addressObj.lng;
         this.addruleForm.addLat = addressObj.lat;
         this.centerDialogVisible = true;
-      }else{
+      } else {
         this.editruleForm.addLon = addressObj.lng;
         this.editruleForm.addLat = addressObj.lat;
         this.editVisible = true;
@@ -697,8 +707,8 @@ export default {
           const SensorCycle = [];
           const NodeBean = {
             sensors: []
-          }
-           /**
+          };
+          /**
            * 传感器类型处理相同的传感器加个序号
            */
           this.SensorEditType.map((o, index) => {
@@ -742,18 +752,18 @@ export default {
       });
     },
     addSensorType() {
-      if(!this.editing){
+      if (!this.editing) {
         this.SensorType.push({ sensor: "", interval: "" });
-      }else{
+      } else {
         this.SensorEditType.push({ sensor: "", interval: "" });
-      }  
+      }
     },
     removeSensorType(index) {
-      if(!this.editing){
+      if (!this.editing) {
         this.SensorType.splice(index, 1);
-      }else{
+      } else {
         this.SensorEditType.splice(index, 1);
-      }  
+      }
     },
     styleObject_method(obj) {
       this.sceneVisible = false;

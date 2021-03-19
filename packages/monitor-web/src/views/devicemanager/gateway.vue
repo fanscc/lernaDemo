@@ -438,6 +438,10 @@ export default {
       this.editId = item.gateId;
       this.editVisible = true;
       this.editing = true;
+      // 编辑页回显
+      this.editruleForm.editOtherName = item.gateAlias;
+      this.editruleForm.addLat = item.lat;
+      this.editruleForm.addLon = item.lon;
     },
     editsaveGroup() {
       this.$refs["editruleForm"].validate(valid => {
@@ -464,7 +468,7 @@ export default {
               this.init();
             })
             .finally(() => {
-              this.editing = false
+              this.editing = false;
               loadingInstance.close();
             });
         }
@@ -543,20 +547,20 @@ export default {
     async getCurrentAddress() {
       // 获取当前位子的坐标
       const addressObj = await this.$refs.getAddress.getAdress();
-      if(!this.editing){
+      if (!this.editing) {
         this.addruleForm.addLon = addressObj.lng;
         this.addruleForm.addLat = addressObj.lat;
-      }else{
+      } else {
         this.editruleForm.addLat = addressObj.lat;
         this.editruleForm.addLon = addressObj.lng;
       }
     },
     emitAdress(addressObj) {
-      if(!this.editing){
+      if (!this.editing) {
         this.addruleForm.addLon = addressObj.lng;
         this.addruleForm.addLat = addressObj.lat;
         this.centerDialogVisible = true;
-      }else{
+      } else {
         this.editruleForm.addLon = addressObj.lng;
         this.editruleForm.addLat = addressObj.lat;
         this.editVisible = true;
