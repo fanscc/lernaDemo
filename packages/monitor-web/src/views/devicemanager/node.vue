@@ -578,7 +578,7 @@ export default {
       this.SensorEditType = item.cycles.map(ite => {
         return {
           sensor: String(parseInt(ite.sensor / 100) * 100),
-          interval: ite.sensor
+          interval: ite.interval
         };
       });
     },
