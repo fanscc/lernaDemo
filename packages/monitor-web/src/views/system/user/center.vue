@@ -50,7 +50,7 @@
                 <svg-icon icon-class="anq" /> 安全设置
                 <div class="user-right">
                   <a @click="$refs.pass.dialog = true">修改密码</a>
-                  <a @click="$refs.email.dialog = true">修改邮箱</a>
+                  <!-- <a @click="$refs.email.dialog = true">修改邮箱</a> -->
                 </div>
               </li>
             </ul>

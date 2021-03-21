@@ -56,7 +56,7 @@ export default {
   data() {
     const validatePass = (rule, value, callback) => {
       if (value) {
-        validPass(value).then(res => {
+        validPass({ password: value }).then(res => {
           if (res.status === 200) {
             callback();
           } else {
@@ -99,7 +99,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.loading = true;
-          updatePass(this.form.confirmPass)
+          updatePass({ password: this.form.confirmPass })
             .then(() => {
               this.resetForm();
               this.$notify({
