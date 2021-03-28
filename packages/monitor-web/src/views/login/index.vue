@@ -7,6 +7,7 @@
         :rules="loginRules"
         label-position="left"
         label-width="0px"
+        size="medium"
         class="login-form"
       >
         <h3 class="title">智慧茶园 后台管理系统</h3>
