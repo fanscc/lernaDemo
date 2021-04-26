@@ -50,11 +50,41 @@
           ref="addruleForm"
           :model="addruleForm"
           :rules="rules"
-          label-width="100px"
+          label-width="140px"
           class="demo-ruleForm"
         >
           <el-form-item label="别名" prop="addOtherName">
-            <el-input v-model="addruleForm.addOtherName" />
+            <el-input
+              style="width: 200px;"
+              v-model="addruleForm.addOtherName"
+            />
+          </el-form-item>
+          <el-form-item label="经纬度" prop="centralPoint">
+            <el-input
+              style="width: 200px;"
+              v-model="addruleForm.centralPoint"
+            />
+            <el-button type="primary" size="mini" @click="selectPoint(1)"
+              >去选择地址</el-button
+            >
+          </el-form-item>
+          <el-form-item label="背景图左下角经纬度" prop="c">
+            <el-input
+              style="width: 200px;"
+              v-model="addruleForm.leftBottomPoint"
+            />
+            <el-button type="primary" size="mini" @click="selectPoint(2)"
+              >去选择地址</el-button
+            >
+          </el-form-item>
+          <el-form-item label="背景图右上角经纬度" prop="c">
+            <el-input
+              style="width: 200px;"
+              v-model="addruleForm.topRightPoint"
+            />
+            <el-button type="primary" size="mini" @click="selectPoint(3)"
+              >去选择地址</el-button
+            >
           </el-form-item>
           <el-form-item label="上传分组图片">
             <cropUploadPic v-if="centerDialogVisible" v-model="picName"
@@ -93,6 +123,10 @@
         <el-button type="primary" @click="editsaveGroup">确 定</el-button>
       </span>
     </el-dialog>
+    <scottPopupWindow
+      ref="scottPopupWindowDom"
+      @sureSave="sureSave"
+    ></scottPopupWindow>
   </div>
 </template>
 
@@ -106,6 +140,7 @@ import {
 } from "@/api/equipment";
 import { Loading } from "element-ui";
 import cropUploadPic from "@/components/uploadAvatar/index";
+import scottPopupWindow from "@/components/scottPopupWindow/index";
 export default {
   name: "Gateway",
   data: function() {
@@ -132,11 +167,16 @@ export default {
       },
       picName: "",
       addruleForm: {
-        addOtherName: "" // 别名
+        addOtherName: "", // 别名
+        centralPoint: "",
+        leftBottomPoint: "",
+        topRightPoint: ""
       },
       editruleForm: {
         editOtherName: "", // 编辑别名
-        pic: ""
+        centralPoint: "",
+        leftBottomPoint: "",
+        topRightPoint: ""
       },
       rules: {
         addOtherName: [
@@ -149,7 +189,8 @@ export default {
     };
   },
   components: {
-    cropUploadPic
+    cropUploadPic,
+    scottPopupWindow
   },
   created() {
     this.init();
@@ -280,6 +321,19 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    // 选择经纬度
+    selectPoint(num) {
+      this.$refs.scottPopupWindowDom.open(num);
+    },
+    sureSave(center, type) {
+      if (type === 1) {
+        this.addruleForm.centralPoint = center.join(",");
+      } else if (type === 2) {
+        this.addruleForm.leftBottomPoint = center.join(",");
+      } else {
+        this.addruleForm.topRightPoint = center.join(",");
+      }
     }
   }
 };
