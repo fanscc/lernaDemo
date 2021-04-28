@@ -5,11 +5,26 @@
     :visible.sync="dialogVisible"
     width="1100px"
   >
-    <div class="contenText" v-if="type !== 4">
+    <div class="contenText" v-if="type !== 4 && type !== 5">
       选中的经纬度: {{ center }}
       <el-button type="primary" @click="sureSave">确定选择</el-button>
     </div>
-    <div class="contenText" v-else>
+    <div
+      v-if="type === 4"
+      style="margin-bottom: 10px;display: flex;align-items: center;"
+    >
+      区域填充颜色:<el-color-picker v-model="color"></el-color-picker>
+      <el-button type="primary" @click="drawArea">{{
+        editType ? "绘制区域" : "保存区域"
+      }}</el-button>
+      <span style="font-size:12px;color:#ddd;margin-left:10px;"
+        >(点击鼠标左键后开始绘制,双击绘制完成)</span
+      >
+      <el-button type="primary" @click="anewDrawArea" v-if="addEdit"
+        >修改绘制区域</el-button
+      >
+    </div>
+    <div class="contenText" v-if="type === 5">
       <el-button type="primary" @click="editArea">{{
         editType ? "编辑区域" : "保存区域点"
       }}</el-button>
@@ -34,7 +49,12 @@ export default {
       map: null,
       polygon: null,
       polyEditor: null,
+      mouseTool: null, // 绘制区域
       editType: true, // true编辑区域点, false保存区域点
+      color: "#1791fc",
+      path: [], // 区域经纬度数组
+      areaConten: "", // 区域面积
+      addEdit: true,
       type: 1, // 1,选择中点2选择图片左下脚经纬度3选择图片右上角经纬度4表示勾勒区域
       center: [116.397428, 39.90923]
     };
@@ -53,7 +73,7 @@ export default {
     init() {
       this.map = new AMap.Map("mapDialog", {
         resizeEnable: true, //是否监控地图容器尺寸变化
-        zoom: 16, //初始化地图层级
+        zoom: 17, //初始化地图层级
         center: this.center //初始化地图中心点
       });
       this.map.add(new AMap.TileLayer.Satellite());
@@ -87,6 +107,11 @@ export default {
           this.map.add(this.marker);
         });
       } else if (this.type === 4) {
+        this.setImg();
+        this.map.plugin(["AMap.MouseTool"], () => {
+          this.mouseTool = new AMap.MouseTool(this.map);
+        });
+      } else if (this.type === 5) {
         this.setImg();
         // 勾勒区域
         let path = [
@@ -132,7 +157,7 @@ export default {
           strokeWeight: 6,
           strokeOpacity: 0.2,
           fillOpacity: 0.4,
-          fillColor: "#1791fc",
+          fillColor: this.color,
           zIndex: 50
         });
 
@@ -155,6 +180,66 @@ export default {
         zooms: [2, 25]
       });
       imageLayer.setMap(this.map);
+    },
+    drawArea() {
+      // 绘制区域
+      this.editType = !this.editType;
+      if (!this.editType) {
+        this.mouseTool.polygon({
+          strokeColor: "#FF33FF",
+          strokeOpacity: 1,
+          strokeWeight: 6,
+          // eslint-disable-next-line no-dupe-keys
+          strokeOpacity: 0.2,
+          fillColor: this.color,
+          fillOpacity: 0.4,
+          strokeStyle: "solid"
+        });
+        this.mouseTool.on("draw", e => {
+          // event.obj 为绘制出来的覆盖物对象
+          this.path = e.obj.getPath();
+          this.areaConten = e.obj.getArea();
+          this.mouseTool.close();
+        });
+      } else {
+        // 保存
+        if (!this.addEdit) {
+          // 已经编辑过了
+          // 保存区域点
+          let editPath = this.polygon.getPath();
+          let editArea = this.polygon.getArea();
+          this.$emit("sureSave", { path: editPath, editArea: editArea });
+          this.dialogVisible = false;
+        } else {
+          this.$emit("sureSave", {
+            path: this.path,
+            editArea: this.areaConten
+          });
+          this.dialogVisible = false;
+        }
+      }
+    },
+    // 重新绘制区域
+    anewDrawArea() {
+      if (this.path.length === 0) return;
+      this.mouseTool.close(true);
+      this.polygon = new AMap.Polygon({
+        path: this.path,
+        strokeColor: "#FF33FF",
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillOpacity: 0.4,
+        fillColor: this.color,
+        zIndex: 50
+      });
+      this.map.add(this.polygon);
+      this.map.setFitView([this.polygon]);
+
+      this.map.plugin(["AMap.PolyEditor"], () => {
+        this.polyEditor = new AMap.PolyEditor(this.map, this.polygon);
+        this.polyEditor.open();
+        this.addEdit = false;
+      });
     },
     editArea() {
       // 编辑区域

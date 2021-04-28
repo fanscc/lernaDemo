@@ -195,6 +195,10 @@
           <el-form-item label="勾勒区域" prop="addChannel">
             <el-button type="primary" @click="selecArea">选择区域</el-button>
           </el-form-item>
+          <el-form-item label="面积计算" prop="addChannel">
+            <span>{{ addruleForm.areaConten }}</span
+            >平方米
+          </el-form-item>
           <el-form-item label="上传图片">
             <uploadPic
               v-if="centerDialogVisible"
@@ -339,7 +343,9 @@ export default {
         addAddress: "", // 网关地址
         addChannel: "", // 网关通道
         netType: "", // 网关通讯方式
-        addressStyle: "1"
+        addressStyle: "1",
+        areaConten: "", // 计算面积
+        path: [] // 勾勒的点
       },
       picName: "", // 上传图片的地址
       editruleForm: {
@@ -580,7 +586,10 @@ export default {
     selecArea() {
       this.$refs.scottPopupWindowDom.open(4, "113.618365, 23.583407");
     },
-    sureSave() {}
+    sureSave(obj) {
+      this.addruleForm.path = obj.path;
+      this.addruleForm.areaConten = obj.editArea;
+    }
   }
 };
 </script>
