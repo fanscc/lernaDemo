@@ -5,9 +5,15 @@
     :visible.sync="dialogVisible"
     width="1100px"
   >
-    <div class="contenText">
+    <div class="contenText" v-if="type !== 4">
       选中的经纬度: {{ center }}
       <el-button type="primary" @click="sureSave">确定选择</el-button>
+    </div>
+    <div class="contenText" v-else>
+      <el-button type="primary" @click="editArea">{{
+        editType ? "编辑区域" : "保存区域点"
+      }}</el-button>
+      <!-- <el-button type="primary" @click="sureSave">确定选择</el-button> -->
     </div>
     <div class="info">
       <label>定位位置描述:</label>
@@ -26,16 +32,22 @@ export default {
       dialogVisible: false,
       marker: null,
       map: null,
-      type: 1, // 1,选择中点2选择图片左下脚经纬度3选择图片右上角经纬度
+      polygon: null,
+      polyEditor: null,
+      editType: true, // true编辑区域点, false保存区域点
+      type: 1, // 1,选择中点2选择图片左下脚经纬度3选择图片右上角经纬度4表示勾勒区域
       center: [116.397428, 39.90923]
     };
   },
   methods: {
-    open(num) {
+    open(num, center) {
       this.dialogVisible = true;
       this.$nextTick(() => {
-        this.init();
+        if (center) {
+          this.center = center.split(",");
+        }
         this.type = num;
+        this.init();
       });
     },
     init() {
@@ -44,6 +56,7 @@ export default {
         zoom: 16, //初始化地图层级
         center: this.center //初始化地图中心点
       });
+      this.map.add(new AMap.TileLayer.Satellite());
       //输入提示
       this.map.plugin(["AMap.AutoComplete", "AMap.PlaceSearch"], () => {
         let autoOptions = {
@@ -59,19 +72,102 @@ export default {
           placeSearch.search(e.poi.name); //关键字查询查询
         }); //注册监听，当选中某条记录时会触发
       });
-      this.map.on("click", e => {
-        if (this.marker) {
-          this.map.remove(this.marker);
-        }
-        let nCenter = [e.lnglat.getLng(), e.lnglat.getLat()];
-        this.center = nCenter;
-        this.marker = new AMap.Marker({
-          icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
-          position: this.center,
-          offset: new AMap.Pixel(-8, -25)
+      if (this.type !== 4) {
+        this.map.on("click", e => {
+          if (this.marker) {
+            this.map.remove(this.marker);
+          }
+          let nCenter = [e.lnglat.getLng(), e.lnglat.getLat()];
+          this.center = nCenter;
+          this.marker = new AMap.Marker({
+            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+            position: this.center,
+            offset: new AMap.Pixel(-8, -25)
+          });
+          this.map.add(this.marker);
         });
-        this.map.add(this.marker);
+      } else if (this.type === 4) {
+        this.setImg();
+        // 勾勒区域
+        let path = [
+          [113.618365, 23.583407],
+          [113.618337, 23.583054],
+          [113.618326, 23.582959],
+          [113.618273, 23.582812],
+          [113.618218, 23.582703],
+          [113.618145, 23.582596],
+          [113.61802, 23.582489],
+          [113.617923, 23.582385],
+          [113.617897, 23.582345],
+          [113.617838, 23.582154],
+          [113.617814, 23.581969],
+          [113.617889, 23.581969],
+          [113.61792, 23.581777],
+          [113.617981, 23.58175],
+          [113.618073, 23.581752],
+          [113.618175, 23.581762],
+          [113.618118, 23.581988],
+          [113.618183, 23.582083],
+          [113.618292, 23.582186],
+          [113.618359, 23.582226],
+          [113.618489, 23.582333],
+          [113.618799, 23.582455],
+          [113.619135, 23.582554],
+          [113.619407, 23.582772],
+          [113.619568, 23.582973],
+          [113.619652, 23.583129],
+          [113.619704, 23.583274],
+          [113.619741, 23.583453],
+          [113.619754, 23.583567],
+          [113.61977, 23.58369],
+          [113.619691, 23.58374],
+          [113.619507, 23.583605],
+          [113.619367, 23.583509],
+          [113.619192, 23.58342],
+          [113.619113, 23.583383]
+        ];
+        this.polygon = new AMap.Polygon({
+          path: path,
+          strokeColor: "#FF33FF",
+          strokeWeight: 6,
+          strokeOpacity: 0.2,
+          fillOpacity: 0.4,
+          fillColor: "#1791fc",
+          zIndex: 50
+        });
+
+        this.map.add(this.polygon);
+        // 缩放地图到合适的视野级别
+        this.map.setFitView([this.polygon]);
+
+        this.map.plugin(["AMap.PolyEditor"], () => {
+          this.polyEditor = new AMap.PolyEditor(this.map, this.polygon);
+        });
+      }
+    },
+    setImg() {
+      let imageLayer = new AMap.ImageLayer({
+        url: require(`@/assets/img/huanong.png`),
+        bounds: new AMap.Bounds(
+          [113.617252, 23.579628],
+          [113.624573, 23.585551]
+        ),
+        zooms: [2, 25]
       });
+      imageLayer.setMap(this.map);
+    },
+    editArea() {
+      // 编辑区域
+      this.editType = !this.editType;
+      if (!this.editType) {
+        this.polyEditor.open();
+      } else {
+        // 保存区域点
+        let editPath = this.polygon.getPath();
+        let editArea = this.polygon.getArea();
+        console.log(11, editPath);
+        console.log(22, editArea);
+      }
     },
     sureSave() {
       this.dialogVisible = false;

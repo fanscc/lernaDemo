@@ -192,6 +192,9 @@
               <el-option key="2" label="室外" value="2" />
             </el-select>
           </el-form-item>
+          <el-form-item label="勾勒区域" prop="addChannel">
+            <el-button type="primary" @click="selecArea">选择区域</el-button>
+          </el-form-item>
           <el-form-item label="上传图片">
             <uploadPic
               v-if="centerDialogVisible"
@@ -264,6 +267,10 @@
       ref="getAddress"
       @emitAdress="emitAdress"
     />
+    <scottPopupWindow
+      ref="scottPopupWindowDom"
+      @sureSave="sureSave"
+    ></scottPopupWindow>
   </div>
 </template>
 
@@ -277,13 +284,15 @@ import {
   deleteGate
 } from "@/api/equipment";
 import selectTheSeats from "@/components/map/selectTheSeats";
+import scottPopupWindow from "@/components/scottPopupWindow/index";
 import uploadPic from "@/components/uploadpic/upload";
 import { Loading } from "element-ui";
 export default {
   name: "Gateway",
   components: {
     selectTheSeats,
-    uploadPic
+    uploadPic,
+    scottPopupWindow
   },
   data: function() {
     const valiNumaddress = (rule, value, callback) => {
@@ -566,7 +575,12 @@ export default {
         this.editVisible = true;
       }
       this.adressVisible = false;
-    }
+    },
+    // 选择区域
+    selecArea() {
+      this.$refs.scottPopupWindowDom.open(4, "113.618365, 23.583407");
+    },
+    sureSave() {}
   }
 };
 </script>

@@ -64,7 +64,7 @@
               style="width: 200px;"
               v-model="addruleForm.centralPoint"
             />
-            <el-button type="primary" size="mini" @click="selectPoint(1)"
+            <el-button type="primary" size="mini" @click="selectPoint(1, 'add')"
               >去选择地址</el-button
             >
           </el-form-item>
@@ -73,7 +73,7 @@
               style="width: 200px;"
               v-model="addruleForm.leftBottomPoint"
             />
-            <el-button type="primary" size="mini" @click="selectPoint(2)"
+            <el-button type="primary" size="mini" @click="selectPoint(2, 'add')"
               >去选择地址</el-button
             >
           </el-form-item>
@@ -82,7 +82,7 @@
               style="width: 200px;"
               v-model="addruleForm.topRightPoint"
             />
-            <el-button type="primary" size="mini" @click="selectPoint(3)"
+            <el-button type="primary" size="mini" @click="selectPoint(3, 'add')"
               >去选择地址</el-button
             >
           </el-form-item>
@@ -104,11 +104,50 @@
           ref="editruleForm"
           :model="editruleForm"
           :rules="rules"
-          label-width="100px"
+          label-width="140px"
           class="demo-ruleForm"
         >
           <el-form-item label="别名" prop="editOtherName">
-            <el-input v-model="editruleForm.editOtherName" />
+            <el-input
+              style="width: 200px;"
+              v-model="editruleForm.editOtherName"
+            />
+          </el-form-item>
+          <el-form-item label="经纬度" prop="centralPoint">
+            <el-input
+              style="width: 200px;"
+              v-model="editruleForm.centralPoint"
+            />
+            <el-button
+              type="primary"
+              size="mini"
+              @click="selectPoint(1, 'edit')"
+              >去选择地址</el-button
+            >
+          </el-form-item>
+          <el-form-item label="背景图左下角经纬度" prop="c">
+            <el-input
+              style="width: 200px;"
+              v-model="editruleForm.leftBottomPoint"
+            />
+            <el-button
+              type="primary"
+              size="mini"
+              @click="selectPoint(2, 'edit')"
+              >去选择地址</el-button
+            >
+          </el-form-item>
+          <el-form-item label="背景图右上角经纬度" prop="c">
+            <el-input
+              style="width: 200px;"
+              v-model="editruleForm.topRightPoint"
+            />
+            <el-button
+              type="primary"
+              size="mini"
+              @click="selectPoint(3, 'edit')"
+              >去选择地址</el-button
+            >
           </el-form-item>
           <el-form-item label="分组图片" prop="editOtherName">
             <img style="width:120px;height: 80px;" :src="editruleForm.pic" />
@@ -178,6 +217,7 @@ export default {
         leftBottomPoint: "",
         topRightPoint: ""
       },
+      type: "add",
       rules: {
         addOtherName: [
           { required: true, message: "请输入别名", trigger: "blur" }
@@ -323,16 +363,48 @@ export default {
         });
     },
     // 选择经纬度
-    selectPoint(num) {
-      this.$refs.scottPopupWindowDom.open(num);
+    selectPoint(num, type) {
+      this.type = type;
+      if (this.type === "edit") {
+        if (num === 1) {
+          this.$refs.scottPopupWindowDom.open(
+            num,
+            this.addruleForm.centralPoint
+          );
+        } else if (num === 2) {
+          this.$refs.scottPopupWindowDom.open(
+            num,
+            this.addruleForm.leftBottomPoint
+          );
+        } else {
+          this.$refs.scottPopupWindowDom.open(
+            num,
+            this.addruleForm.topRightPoint
+          );
+        }
+      } else {
+        this.$refs.scottPopupWindowDom.open(num);
+      }
     },
     sureSave(center, type) {
       if (type === 1) {
-        this.addruleForm.centralPoint = center.join(",");
+        if (this.type === "add") {
+          this.addruleForm.centralPoint = center.join(",");
+        } else {
+          this.editruleForm.centralPoint = center.join(",");
+        }
       } else if (type === 2) {
-        this.addruleForm.leftBottomPoint = center.join(",");
+        if (type === 1) {
+          this.addruleForm.leftBottomPoint = center.join(",");
+        } else {
+          this.editruleForm.leftBottomPoint = center.join(",");
+        }
       } else {
-        this.addruleForm.topRightPoint = center.join(",");
+        if (type === 1) {
+          this.addruleForm.topRightPoint = center.join(",");
+        } else {
+          this.editruleForm.topRightPoint = center.join(",");
+        }
       }
     }
   }
