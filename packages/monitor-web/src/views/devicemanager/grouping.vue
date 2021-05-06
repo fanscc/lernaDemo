@@ -62,15 +62,6 @@
               v-model="addruleForm.addOtherName"
             />
           </el-form-item>
-          <el-form-item label="经纬度" prop="centralPoint">
-            <el-input
-              style="width: 200px;"
-              v-model="addruleForm.centralPoint"
-            />
-            <el-button type="primary" size="mini" @click="selectPoint(1, 'add')"
-              >去选择地址</el-button
-            >
-          </el-form-item>
           <el-form-item label="背景图左下角经纬度" prop="c">
             <el-input
               style="width: 200px;"
@@ -115,18 +106,6 @@
               style="width: 200px;"
               v-model="editruleForm.editOtherName"
             />
-          </el-form-item>
-          <el-form-item label="经纬度" prop="centralPoint">
-            <el-input
-              style="width: 200px;"
-              v-model="editruleForm.centralPoint"
-            />
-            <el-button
-              type="primary"
-              size="mini"
-              @click="selectPoint(1, 'edit')"
-              >去选择地址</el-button
-            >
           </el-form-item>
           <el-form-item label="背景图左下角经纬度" prop="c">
             <el-input
