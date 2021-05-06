@@ -1,7 +1,7 @@
 <template>
   <div class="chart_conten_node">
     <div class="chart_conten_search">
-      <el-form ref="form" :inline="true" label-width="110px" size="small">
+      <el-form ref="form" :inline="true" label-width="82px" size="small">
         <el-form-item label="分组">
           <el-select
             v-model="groupValue"
@@ -48,14 +48,14 @@
           @click="resetValue"
         >重置</el-button
         > -->
+        <el-button
+          v-permission="['ADMIN', 'NODE_ALL', 'NODE_ADD']"
+          type="primary"
+          icon="el-icon-plus"
+          @click="centerDialogVisible = true"
+          >新增</el-button
+        >
       </el-form>
-      <el-button
-        v-permission="['ADMIN', 'NODE_ALL', 'NODE_ADD']"
-        type="primary"
-        icon="el-icon-plus"
-        @click="centerDialogVisible = true"
-        >新增</el-button
-      >
     </div>
 
     <div class="chart_conten_table">
@@ -65,6 +65,7 @@
         :cell-style="bodyStyle"
         :header-cell-style="headerStyle"
         stripe
+        border
         show-overflow-tooltip
         style="width: 100%;flex:1"
         height="100%"

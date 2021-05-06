@@ -17,6 +17,9 @@
         :cell-style="bodyStyle"
         :header-cell-style="headerStyle"
         stripe
+        border
+        default-expand-all
+        :tree-props="{ children: 'children' }"
         show-overflow-tooltip
         style="width: 100%"
         height="100%"

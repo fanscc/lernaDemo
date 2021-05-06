@@ -41,6 +41,7 @@
         :cell-style="bodyStyle"
         :header-cell-style="headerStyle"
         stripe
+        border
         show-overflow-tooltip
         style="width: 100%"
         height="100%"
