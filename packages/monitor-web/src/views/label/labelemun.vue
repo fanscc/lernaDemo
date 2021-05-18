@@ -1,7 +1,7 @@
 <template>
   <div class="chart_conten">
     <div class="chart_conten_search">
-      <el-form :inline="true" label-width="110px" size="small">
+      <el-form :inline="true" label-width="60px" size="small">
         <el-form-item label="类别">
           <el-select
             v-model="group"
@@ -37,6 +37,7 @@
       <el-table
         v-loading="loading"
         :data="tableData"
+        border
         :cell-style="bodyStyle"
         :header-cell-style="headerStyle"
         stripe
