@@ -37,8 +37,6 @@ export default {
     return {
       map: null,
       marker: null,
-      groupArr: [],
-      groupId: "",
       center: [],
       dialogVisible: false
     };
@@ -103,7 +101,6 @@ export default {
       });
     },
     close() {
-      this.groupId = "";
       this.center = [];
     }
   }
