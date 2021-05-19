@@ -18,16 +18,32 @@
         :header-cell-style="headerStyle"
         stripe
         border
-        default-expand-all
-        :tree-props="{ children: 'children' }"
         show-overflow-tooltip
         style="width: 100%"
         height="100%"
       >
-        <el-table-column type="index" width="50" />
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <h3>
+                一区地块信息
+                <el-button type="primary" style="margin-left: 8px;"
+                  >编辑区块</el-button
+                >
+              </h3>
+              <el-form-item label="区块名称:">
+                <span>{{ props.row.groupName }}</span>
+              </el-form-item>
+              <el-form-item label="区块面积:">
+                <span>{{ props.row.groupName }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column type="index" width="50" label="序号" />
         <el-table-column prop="groupId" label="分组Id" />
         <el-table-column prop="groupName" label="别名" />
-        <el-table-column fixed="right" label="操作" width="100" center>
+        <el-table-column fixed="right" label="操作" width="180" center>
           <template slot-scope="scope">
             <el-button
               v-permission="['ADMIN', 'GROUP_ALL', 'GROUP_EDIT']"
@@ -35,6 +51,9 @@
               size="mini"
               @click="editgroup(scope.row)"
               >编辑</el-button
+            >
+            <el-button type="success" size="mini" @click="addArea(scope.row)"
+              >添加地块</el-button
             >
           </template>
         </el-table-column>
@@ -163,6 +182,9 @@
       ref="scottPopupWindowDom"
       @sureSave="sureSave"
     ></scottPopupWindow>
+
+    <!-- 添加区块信息 -->
+    <addAreaDialog ref="addAreaDialogDom"></addAreaDialog>
   </div>
 </template>
 
@@ -177,6 +199,7 @@ import {
 import { Loading } from "element-ui";
 import cropUploadPic from "@/components/uploadAvatar/index";
 import scottPopupWindow from "@/components/scottPopupWindow/index";
+import addAreaDialog from "./addAreaDialog";
 export default {
   name: "Gateway",
   data: function() {
@@ -228,7 +251,8 @@ export default {
   },
   components: {
     cropUploadPic,
-    scottPopupWindow
+    scottPopupWindow,
+    addAreaDialog
   },
   created() {
     this.init();
@@ -419,6 +443,12 @@ export default {
           this.editruleForm.topRightPoint = center.join(",");
         }
       }
+    },
+    /**
+     * 地块信息
+     */
+    addArea(row) {
+      this.$refs.addAreaDialogDom.open(row.groupId);
     }
   }
 };

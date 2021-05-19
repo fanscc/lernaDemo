@@ -3,6 +3,8 @@
     class="scottPopupWindow"
     title="定位位置"
     :visible.sync="dialogVisible"
+    :append-to-body="true"
+    :close-on-click-modal="false"
     width="1100px"
   >
     <div class="contenText" v-if="type !== 4 && type !== 5">
@@ -60,12 +62,13 @@ export default {
     };
   },
   methods: {
-    open(num, center) {
+    open(num, center, path = []) {
       this.dialogVisible = true;
       this.$nextTick(() => {
         if (center) {
           this.center = center.split(",");
         }
+        this.path = path;
         this.type = num;
         this.init();
       });
@@ -92,7 +95,7 @@ export default {
           placeSearch.search(e.poi.name); //关键字查询查询
         }); //注册监听，当选中某条记录时会触发
       });
-      if (this.type !== 4) {
+      if (this.type !== 4 && this.type !== 5) {
         this.map.on("click", e => {
           if (this.marker) {
             this.map.remove(this.marker);
@@ -114,43 +117,46 @@ export default {
       } else if (this.type === 5) {
         this.setImg();
         // 勾勒区域
-        let path = [
-          [113.618365, 23.583407],
-          [113.618337, 23.583054],
-          [113.618326, 23.582959],
-          [113.618273, 23.582812],
-          [113.618218, 23.582703],
-          [113.618145, 23.582596],
-          [113.61802, 23.582489],
-          [113.617923, 23.582385],
-          [113.617897, 23.582345],
-          [113.617838, 23.582154],
-          [113.617814, 23.581969],
-          [113.617889, 23.581969],
-          [113.61792, 23.581777],
-          [113.617981, 23.58175],
-          [113.618073, 23.581752],
-          [113.618175, 23.581762],
-          [113.618118, 23.581988],
-          [113.618183, 23.582083],
-          [113.618292, 23.582186],
-          [113.618359, 23.582226],
-          [113.618489, 23.582333],
-          [113.618799, 23.582455],
-          [113.619135, 23.582554],
-          [113.619407, 23.582772],
-          [113.619568, 23.582973],
-          [113.619652, 23.583129],
-          [113.619704, 23.583274],
-          [113.619741, 23.583453],
-          [113.619754, 23.583567],
-          [113.61977, 23.58369],
-          [113.619691, 23.58374],
-          [113.619507, 23.583605],
-          [113.619367, 23.583509],
-          [113.619192, 23.58342],
-          [113.619113, 23.583383]
-        ];
+        let path =
+          this.path.length !== 0
+            ? this.path
+            : [
+                [113.618365, 23.583407],
+                [113.618337, 23.583054],
+                [113.618326, 23.582959],
+                [113.618273, 23.582812],
+                [113.618218, 23.582703],
+                [113.618145, 23.582596],
+                [113.61802, 23.582489],
+                [113.617923, 23.582385],
+                [113.617897, 23.582345],
+                [113.617838, 23.582154],
+                [113.617814, 23.581969],
+                [113.617889, 23.581969],
+                [113.61792, 23.581777],
+                [113.617981, 23.58175],
+                [113.618073, 23.581752],
+                [113.618175, 23.581762],
+                [113.618118, 23.581988],
+                [113.618183, 23.582083],
+                [113.618292, 23.582186],
+                [113.618359, 23.582226],
+                [113.618489, 23.582333],
+                [113.618799, 23.582455],
+                [113.619135, 23.582554],
+                [113.619407, 23.582772],
+                [113.619568, 23.582973],
+                [113.619652, 23.583129],
+                [113.619704, 23.583274],
+                [113.619741, 23.583453],
+                [113.619754, 23.583567],
+                [113.61977, 23.58369],
+                [113.619691, 23.58374],
+                [113.619507, 23.583605],
+                [113.619367, 23.583509],
+                [113.619192, 23.58342],
+                [113.619113, 23.583383]
+              ];
         this.polygon = new AMap.Polygon({
           path: path,
           strokeColor: "#FF33FF",
@@ -208,12 +214,23 @@ export default {
           // 保存区域点
           let editPath = this.polygon.getPath();
           let editArea = this.polygon.getArea();
-          this.$emit("sureSave", { path: editPath, editArea: editArea });
+          if (editPath.length === 0) {
+            return this.$message.warning("请先勾勒区域");
+          }
+          this.$emit("sureSave", {
+            path: editPath,
+            editArea: editArea,
+            color: this.color
+          });
           this.dialogVisible = false;
         } else {
+          if (this.path.length === 0) {
+            return this.$message.warning("请先勾勒区域");
+          }
           this.$emit("sureSave", {
             path: this.path,
-            editArea: this.areaConten
+            editArea: this.areaConten,
+            color: this.color
           });
           this.dialogVisible = false;
         }
@@ -250,8 +267,12 @@ export default {
         // 保存区域点
         let editPath = this.polygon.getPath();
         let editArea = this.polygon.getArea();
-        console.log(11, editPath);
-        console.log(22, editArea);
+        this.$emit("sureSave", {
+          path: editPath,
+          editArea: editArea,
+          color: this.color
+        });
+        this.dialogVisible = false;
       }
     },
     sureSave() {
