@@ -1,7 +1,7 @@
 <template>
   <div class="operation">
     <el-drawer size="500px" :visible.sync="drawer" :direction="direction">
-      <p slot="title" class="header">操作管理</p>
+      <h2 slot="title" class="header">{{ title }}</h2>
       <div>
         <el-button type="primary" @click="addOperation" class="add_btn"
           >新增操作</el-button
@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       id: "",
+      title: "",
       drawer: false,
       operationMarkVisition: false,
       direction: "rtl",
@@ -50,10 +51,11 @@ export default {
     };
   },
   methods: {
-    open(id) {
+    open(id, name) {
       this.activities = [];
       this.drawer = true;
       this.id = id;
+      this.title = name;
       this.init();
     },
     init() {

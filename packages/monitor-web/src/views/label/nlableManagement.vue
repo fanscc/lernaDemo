@@ -12,23 +12,31 @@
       </el-select>
     </div>
     <div id="map_conten"></div>
+    <operation v-if="operationShow" ref="operationDom"></operation>
   </div>
 </template>
 
 <script>
 import { getGroup } from "@/api/equipment";
+import { getBaseThing } from "@/api/label/index";
+import operation from "./operation.vue";
 export default {
   name: "nlableManagement",
   data() {
     return {
       groupId: "",
       grounpList: [],
-      center: [116.397428, 39.90923]
+      overlayList: [],
+      center: [113.354708, 23.166403],
+      operationShow: false
     };
   },
   created() {
     this.getEnums();
     this.initMap();
+  },
+  components: {
+    operation
   },
   methods: {
     search() {},
@@ -44,6 +52,44 @@ export default {
           center: this.center //初始化地图中心点
         });
         this.map.add(new AMap.TileLayer.Satellite());
+        this.initData();
+      });
+    },
+    initData() {
+      getBaseThing().then(res => {
+        this.overlayList = [];
+        res.result.forEach(ite => {
+          this.createMarker(ite.longitude, ite.latitude, ite.name, ite.id);
+        });
+        // 地图自适应
+        this.map.setFitView(null, false, [150, 60, 100, 60]);
+      });
+    },
+    createMarker(lng, lat, name, id) {
+      let markerx = new AMap.Marker({
+        icon: require(`@/assets/TreeIcon.png`),
+        offset: new AMap.Pixel(-17, -40),
+        position: [lng, lat],
+        map: this.map,
+        title: name,
+        label: {
+          direction: "top",
+          content: `<div class='labelContent'>${name}</div>`,
+          offset: new AMap.Pixel(-5, -5)
+        },
+        extData: {
+          id: id,
+          name: name
+        }
+      });
+      this.overlayList.push(markerx);
+      markerx.on("click", e => {
+        this.operationShow = true;
+        this.$nextTick(() => {
+          let markId = e.target._opts.extData.id;
+          let name = e.target._opts.extData.name;
+          this.$refs.operationDom.open(markId, name);
+        });
       });
     }
   }
@@ -62,5 +108,17 @@ export default {
   #map_conten {
     height: calc(100% - 50px);
   }
+}
+</style>
+
+<style>
+.amap-marker-label {
+  border: 1px solid #53c4f7;
+  border-radius: 2px;
+}
+.labelContent {
+  font-size: 16px;
+  padding: 2px;
+  font-weight: bold;
 }
 </style>

@@ -80,8 +80,11 @@
               >去选择地址</el-button
             >
           </el-form-item>
-          <el-form-item label="上传分组图片">
+          <el-form-item label="上传分组封面">
             <cropUploadPic v-if="centerDialogVisible" v-model="picName"
+          /></el-form-item>
+          <el-form-item label="上传分组全景图">
+            <cropUploadPic v-if="centerDialogVisible" v-model="map2d"
           /></el-form-item>
         </el-form>
       </span>
@@ -244,7 +247,12 @@ export default {
         if (valid) {
           const params = {
             groupName: this.addruleForm.addOtherName,
-            groupImage: `/base/org/1/file?file=${this.picName}`
+            groupImage: `/base/org/1/file?file=${this.picName}`,
+            ldLat: this.leftBottomPoint.split(",")[1],
+            ldLon: this.leftBottomPoint.split(",")[0],
+            rtLat: this.topRightPoint.split(",")[1],
+            rtLon: this.topRightPoint.split(",")[0],
+            map2d: `/base/org/1/file?file=${this.map2d}`
           };
           console.log(this.picName);
           const loadingInstance = Loading.service({
@@ -369,6 +377,7 @@ export default {
       }
     },
     sureSave(center, type) {
+      // // 1,选择中点2选择图片左下脚经纬度3选择图片右上角经纬度4表示勾勒区域
       if (type === 1) {
         if (this.type === "add") {
           this.addruleForm.centralPoint = center.join(",");
@@ -376,13 +385,13 @@ export default {
           this.editruleForm.centralPoint = center.join(",");
         }
       } else if (type === 2) {
-        if (type === 1) {
+        if (this.type === "add") {
           this.addruleForm.leftBottomPoint = center.join(",");
         } else {
           this.editruleForm.leftBottomPoint = center.join(",");
         }
       } else {
-        if (type === 1) {
+        if (this.type === "add") {
           this.addruleForm.topRightPoint = center.join(",");
         } else {
           this.editruleForm.topRightPoint = center.join(",");

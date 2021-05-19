@@ -30,7 +30,7 @@ export function editbaseTag(data, id) {
 }
 
 // 获取标点
-export function getBaseThing(params, tags) {
+export function getBaseThing(params, tags = "") {
   return request({
     url: `/base/thing?tags=${tags}`,
     method: "get",
