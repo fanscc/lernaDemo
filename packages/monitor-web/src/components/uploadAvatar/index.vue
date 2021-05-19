@@ -55,7 +55,7 @@
         @click="summitAvata()"
         :disabled="!cropper.img"
         :loading="loading"
-        >上传</el-button
+        >{{ initUpload ? "上传" : "重新上传" }}</el-button
       >
     </div>
   </div>
@@ -86,6 +86,7 @@ export default {
       previews: {},
       formData: {},
       action_url: "",
+      initUpload: true,
       loading: false
       // step: 2
     };
@@ -183,6 +184,7 @@ export default {
           .then(() => {
             this.$message.success("图片上传成功");
             this.loading = false;
+            this.initUpload = false;
             this.$emit("input", `${this.formData.key}`);
           })
           .catch(() => {

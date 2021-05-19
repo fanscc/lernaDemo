@@ -45,6 +45,7 @@
     <el-dialog
       wdith="600px"
       :visible.sync="centerDialogVisible"
+      :close-on-click-modal="false"
       title="新增分组"
       center
     >
@@ -95,7 +96,12 @@
     </el-dialog>
 
     <!-- 编辑用户 -->
-    <el-dialog :visible.sync="editVisible" title="编辑分组" center>
+    <el-dialog
+      :visible.sync="editVisible"
+      title="编辑分组"
+      :close-on-click-modal="false"
+      center
+    >
       <span>
         <el-form
           ref="editruleForm"
@@ -139,6 +145,12 @@
           </el-form-item>
           <el-form-item label="替换分组图片">
             <cropUploadPic v-if="editVisible" v-model="picName"
+          /></el-form-item>
+          <el-form-item label="分组全景图" prop="editOtherName">
+            <img style="width:120px;height: 80px;" :src="editruleForm.map2d" />
+          </el-form-item>
+          <el-form-item label="替换分组全景图">
+            <cropUploadPic v-if="editVisible" v-model="map2d"
           /></el-form-item>
         </el-form>
       </span>
@@ -190,6 +202,7 @@ export default {
         height: "40px"
       },
       picName: "",
+      map2d: "",
       addruleForm: {
         addOtherName: "", // 别名
         centralPoint: "",
@@ -239,7 +252,12 @@ export default {
       this.editId = item.groupId;
       this.editVisible = true;
       this.editruleForm.editOtherName = item.groupName;
+      this.picName = item.groupImage;
+      this.map2d = item.map2d;
       this.editruleForm.pic = `https://zckj.gudonger.com/${item.groupImage}`;
+      this.editruleForm.map2d = `https://zckj.gudonger.com/${item.map2d}`;
+      this.leftBottomPoint = [item.ldLat, item.ldLon];
+      this.topRightPoint = [item.rtLat, item.rtLon];
     },
     saveGroup() {
       // 新增组名
@@ -254,7 +272,6 @@ export default {
             rtLon: this.topRightPoint.split(",")[0],
             map2d: `/base/org/1/file?file=${this.map2d}`
           };
-          console.log(this.picName);
           const loadingInstance = Loading.service({
             fullscreen: true,
             lock: true,
@@ -284,7 +301,12 @@ export default {
         if (valid) {
           const params = {
             groupName: this.editruleForm.editOtherName,
-            groupImage: `/base/org/1/file?file=${this.picName}`
+            groupImage: `/base/org/1/file?file=${this.picName}`,
+            ldLat: this.leftBottomPoint.split(",")[1],
+            ldLon: this.leftBottomPoint.split(",")[0],
+            rtLat: this.topRightPoint.split(",")[1],
+            rtLon: this.topRightPoint.split(",")[0],
+            map2d: `/base/org/1/file?file=${this.map2d}`
           };
           const loadingInstance = Loading.service({
             fullscreen: true,
