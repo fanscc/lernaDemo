@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="添加地块"
+    :title="areaId ? '编辑地块' : '新增地块'"
     class="addArea"
     :visible.sync="dialogVisible"
     width="800px"
@@ -53,6 +53,7 @@ export default {
     return {
       dialogVisible: false,
       groundId: "",
+      areaId: "",
       ruleForm: {
         name: "",
         color: "",
@@ -65,8 +66,9 @@ export default {
     };
   },
   methods: {
-    open(id) {
-      this.groundId = id;
+    open(row) {
+      this.groundId = row.id;
+      this.areaId = row.areaId;
       this.dialogVisible = true;
       this.$nextTick(() => {
         this.$refs["ruleForm"].resetFields();

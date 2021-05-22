@@ -193,13 +193,6 @@
               <el-option key="2" label="室外" value="2" />
             </el-select>
           </el-form-item>
-          <el-form-item label="勾勒区域" prop="addChannel">
-            <el-button type="primary" @click="selecArea">选择区域</el-button>
-          </el-form-item>
-          <el-form-item label="面积计算" prop="addChannel">
-            <span>{{ addruleForm.areaConten }}</span
-            >平方米
-          </el-form-item>
           <el-form-item label="上传图片">
             <uploadPic
               v-if="centerDialogVisible"
@@ -272,10 +265,6 @@
       ref="getAddress"
       @emitAdress="emitAdress"
     />
-    <scottPopupWindow
-      ref="scottPopupWindowDom"
-      @sureSave="sureSave"
-    ></scottPopupWindow>
   </div>
 </template>
 
@@ -289,15 +278,13 @@ import {
   deleteGate
 } from "@/api/equipment";
 import selectTheSeats from "@/components/map/selectTheSeats";
-import scottPopupWindow from "@/components/scottPopupWindow/index";
 import uploadPic from "@/components/uploadpic/upload";
 import { Loading } from "element-ui";
 export default {
   name: "Gateway",
   components: {
     selectTheSeats,
-    uploadPic,
-    scottPopupWindow
+    uploadPic
   },
   data: function() {
     const valiNumaddress = (rule, value, callback) => {
@@ -344,9 +331,7 @@ export default {
         addAddress: "", // 网关地址
         addChannel: "", // 网关通道
         netType: "", // 网关通讯方式
-        addressStyle: "1",
-        areaConten: "", // 计算面积
-        path: [] // 勾勒的点
+        addressStyle: "1"
       },
       picName: "", // 上传图片的地址
       editruleForm: {
@@ -582,10 +567,6 @@ export default {
         this.editVisible = true;
       }
       this.adressVisible = false;
-    },
-    // 选择区域
-    selecArea() {
-      this.$refs.scottPopupWindowDom.open(4, "113.618365, 23.583407");
     },
     sureSave(obj) {
       this.addruleForm.path = obj.path;

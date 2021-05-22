@@ -27,7 +27,10 @@
             <el-form label-position="left" inline class="demo-table-expand">
               <h3>
                 一区地块信息
-                <el-button type="primary" style="margin-left: 8px;"
+                <el-button
+                  type="primary"
+                  style="margin-left: 8px;"
+                  @click="editArea(props.row)"
                   >编辑区块</el-button
                 >
               </h3>
@@ -60,7 +63,7 @@
       </el-table>
     </div>
 
-    <!-- 新增用户 -->
+    <!-- 新增分组 -->
     <el-dialog
       wdith="600px"
       :visible.sync="centerDialogVisible"
@@ -449,7 +452,13 @@ export default {
      * 地块信息
      */
     addArea(row) {
-      this.$refs.addAreaDialogDom.open(row.groupId);
+      this.$refs.addAreaDialogDom.open(row);
+    },
+    /**
+     * 编辑地块
+     */
+    editArea(row) {
+      this.$refs.addAreaDialogDom.open(row, id);
     }
   }
 };
