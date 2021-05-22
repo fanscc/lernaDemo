@@ -280,21 +280,22 @@ export default {
       this.map2d = item.map2d;
       this.editruleForm.pic = `https://zckj.gudonger.com/${item.groupImage}`;
       this.editruleForm.map2d = `https://zckj.gudonger.com/${item.map2d}`;
-      this.leftBottomPoint = [item.ldLat, item.ldLon];
-      this.topRightPoint = [item.rtLat, item.rtLon];
+      this.editruleForm.leftBottomPoint = `${item.ldLat},${item.ldLon}`;
+      this.editruleForm.topRightPoint = `${item.rtLat},${item.rtLon}`;
     },
     saveGroup() {
       // 新增组名
       this.$refs["addruleForm"].validate(valid => {
         if (valid) {
+          console.log(22, this.leftBottomPoint);
           const params = {
             groupName: this.addruleForm.addOtherName,
             groupImage: `/base/org/1/file?file=${this.picName}`,
-            ldLat: this.leftBottomPoint.split(",")[1],
-            ldLon: this.leftBottomPoint.split(",")[0],
-            rtLat: this.topRightPoint.split(",")[1],
-            rtLon: this.topRightPoint.split(",")[0],
-            map2d: `/base/org/1/file?file=${this.map2d}`
+            ldLat: this.addruleForm.leftBottomPoint.split(",")[1],
+            ldLon: this.addruleForm.leftBottomPoint.split(",")[0],
+            rtLat: this.addruleForm.topRightPoint.split(",")[1],
+            rtLon: this.addruleForm.topRightPoint.split(",")[0],
+            map2d: `/base/org/1/file?file=`
           };
           const loadingInstance = Loading.service({
             fullscreen: true,
