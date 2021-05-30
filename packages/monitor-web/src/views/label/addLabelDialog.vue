@@ -15,10 +15,10 @@
         label-width="100px"
         class="demo-ruleForm"
       >
-        <el-form-item label="所属分组" prop="grounpId">
+        <el-form-item label="所属分组" prop="groupId">
           <el-select
             style="width: 100%;"
-            v-model="ruleForm.grounpId"
+            v-model="ruleForm.groupId"
             placeholder="请选择"
           >
             <el-option
@@ -94,15 +94,13 @@ export default {
       id: "",
       grounpList: [],
       ruleForm: {
-        grounpId: "",
+        groupId: "",
         name: "",
         tag: "",
         brief: ""
       },
       rules: {
-        grounpId: [
-          { required: true, message: "请选择分组", trigger: "change" }
-        ],
+        groupId: [{ required: true, message: "请选择分组", trigger: "change" }],
         name: [{ required: true, message: "请输入名称", trigger: "blur" }],
         tag: [{ required: true, message: "请选择标注类别", trigger: "change" }]
       },
@@ -123,7 +121,7 @@ export default {
         // 编辑页面
         this.id = row.id;
         this.ruleForm.name = row.name;
-        this.ruleForm.grounpId = row.grounpId;
+        this.ruleForm.groupId = row.groupId;
         this.ruleForm.tag = row.tags[0].id;
         this.ruleForm.brief = row.brief;
         this.markPosition = [row.longitude, row.latitude];
@@ -148,7 +146,7 @@ export default {
             return this.$message.warning("请先选择地址");
           }
           let datas = {
-            grounpId: this.ruleForm.grounpId,
+            groupId: this.ruleForm.groupId,
             name: this.ruleForm.name,
             brief: this.ruleForm.brief,
             longitude: this.markPosition[0],
@@ -171,7 +169,7 @@ export default {
       });
     },
     selectMap() {
-      if (!this.ruleForm.grounpId && this.markPosition.length === 0) {
+      if (!this.ruleForm.groupId && this.markPosition.length === 0) {
         return this.$message.warning("请先选择分组");
       }
       this.mapShow = true;
@@ -187,7 +185,7 @@ export default {
       this.$refs["ruleForm"].resetFields();
       this.id = "";
       this.ruleForm = {
-        grounpId: "",
+        groupId: "",
         name: "",
         tag: "",
         brief: ""

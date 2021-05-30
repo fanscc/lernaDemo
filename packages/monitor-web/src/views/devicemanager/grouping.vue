@@ -298,7 +298,7 @@ export default {
             ldLon: this.addruleForm.leftBottomPoint.split(",")[0],
             rtLat: this.addruleForm.topRightPoint.split(",")[1],
             rtLon: this.addruleForm.topRightPoint.split(",")[0],
-            map2d: `/base/org/1/file?file=`
+            map2d: `/base/org/1/file?file=${this.map2d}`
           };
           const loadingInstance = Loading.service({
             fullscreen: true,

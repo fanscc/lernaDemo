@@ -114,10 +114,9 @@ export default {
         return false;
       }
       // 超出大小
-      console.log(3, file.size / 1024);
-      if (file.size / 1024 > 5120) {
+      if (file.size / 1024 > 30120) {
         this.$message({
-          message: "图片大小超出5MB，请重新选择",
+          message: "图片大小超出30MB，请重新选择",
           type: "warning"
         });
         return false;

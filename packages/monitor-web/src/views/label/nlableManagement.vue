@@ -1,7 +1,13 @@
 <template>
   <div class="nlableManagement">
     <div class="classFlex">
-      <el-select v-model="groupId" filterable clearable placeholder="请选择">
+      <el-select
+        v-model="groupId"
+        @click="switchGroup"
+        filterable
+        clearable
+        placeholder="请选择"
+      >
         <el-option
           v-for="item in grounpList"
           :key="item.groupId"
@@ -44,6 +50,9 @@ export default {
       getGroup().then(res => {
         this.grounpList = res.result;
       });
+    },
+    switchGroup(val) {
+      console.log(val);
     },
     initMap() {
       this.$nextTick(() => {
